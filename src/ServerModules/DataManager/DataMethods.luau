@@ -71,6 +71,15 @@ function dataMethods.Return(plr: Player)
 	return profile.Data
 end
 
+function dataMethods.IncreaseSpeed(plr: Player)
+	local profile = sessionData[plr]
+
+	local gained = 1 * profile.Data.SpeedMultiplier * profile.Data.SpeedMultiplierProduct
+	profile.Data.Speed += gained
+
+	Packets.Upgrades.updateSpeed.sendTo({total = profile.Data.Speed, gained = gained}, plr)
+end
+
 function dataMethods.ReturnKey(plr: Player, key: string)
 	return sessionData[plr].Data[key]
 end

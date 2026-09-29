@@ -4,14 +4,16 @@ local profileTemplate = {
     Cash = 0,
     Speed = 0,
     SpeedMultiplier = 1,
+	SpeedMultiplierProduct = 1,
     Strength = 0,
     StrengthMultiplier = 1,
+	StrengthMultiplierProduct = 1,
     MaxSpeed = 1000,
 }
 
 local configs = {
 	printing = false,
-	reseting = false,
+	reseting = true,
 }
 
 if configs.reseting then

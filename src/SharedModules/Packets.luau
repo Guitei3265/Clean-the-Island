@@ -17,10 +17,17 @@ local packets = {
                 value = ByteNet.nothing
             }),
 
-            update = ByteNet.definePacket({
+            updateSpeed = ByteNet.definePacket({
                 value = ByteNet.struct({
-                    strength = ByteNet.int32,
-                    speed = ByteNet.int32,
+                    total = ByteNet.int32,
+                    gained = ByteNet.int32,
+                })
+            }),
+
+            updateStrength = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    total = ByteNet.int32,
+                    gained = ByteNet.int32,
                 })
             }),
         }

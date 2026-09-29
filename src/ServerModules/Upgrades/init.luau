@@ -1,42 +1,73 @@
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 local DataManager = require(game.ServerStorage.ServerModules.DataManager)
+local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 
 local upgrades = {}
 
+local growthFactor = 1.1
+local segundos = 6
+
 function upgrades.GetBuff(x: number)
-    local buff = math.log(1 + (x * 0.12 / 12)) / math.log(1.12)
+    local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
     return math.floor(buff)
 end
 
-for x = 0, 1000 do
-    print("X: "..x..", speed: "..(16 + upgrades.GetBuff(x)))
+function upgrades.Walked(player: Player)
+    DataManager.IncreaseSpeed(player)
 end
 
 function upgrades.PlayerAdded(player: Player)
     local profile = DataManager.WaitForProfile(player)
-    local buff = upgrades.GetBuff(profile.Speed)
 
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid") :: Humanoid
+    local connection: RBXScriptConnection? = nil
+    local timer = 0
 
-    humanoid.WalkSpeed = 16 + buff
-
-    task.wait(5)
-
-    
-    --[[while task.wait(0.25) do
-        x += 1
-        buff = upgrades.GetBuff(x)
-
-        if humanoid then
-            humanoid.WalkSpeed = 16 + buff
+    local function onCharacterAdded(character: Model)
+        if connection then
+            connection:Disconnect()
         end
-    end]]
+
+        local humanoid = character:WaitForChild("Humanoid") :: Humanoid
+
+        humanoid.WalkSpeed = 16 + upgrades.GetBuff(profile.Speed)
+
+        connection = RunService.Heartbeat:Connect(function(deltaTime)
+            timer += deltaTime
+
+            if timer > 0.25 then
+                timer -= 0.25
+
+                if humanoid.MoveDirection.Magnitude > 0 then
+                    upgrades.Walked(player)
+                end
+            end
+
+            humanoid.WalkSpeed = 16 + upgrades.GetBuff(profile.Speed)
+        end)
+    end
+
+    if player.Character then
+        onCharacterAdded(player.Character)
+    end
+
+    player.CharacterAdded:Connect(onCharacterAdded)
+end
+
+function upgrades.Request(player: Player)
+    local profile = DataManager.WaitForProfile(player)
+
+    Packets.Upgrades.updateSpeed.sendTo({total = profile.Speed, gained = 0}, player)
+    Packets.Upgrades.updateStrength.sendTo({total = profile.Strength, gained = 0}, player)
 end
 
 function upgrades.Init()
     Players.PlayerAdded:Connect(upgrades.PlayerAdded)
+
+    Packets.Upgrades.request.listen(function(_, player)
+        upgrades.Request(player)
+    end)
 end
 
 return upgrades
