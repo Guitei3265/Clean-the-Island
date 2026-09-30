@@ -40,6 +40,12 @@ local packets = {
                     multiplier = ByteNet.int32,
                 })
             }),
+
+            strengthProductBought = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    multiplier = ByteNet.int32,
+                })
+            }),
         }
     end)
 }

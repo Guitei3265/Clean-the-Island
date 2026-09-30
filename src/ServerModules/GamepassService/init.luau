@@ -36,25 +36,6 @@ local gamepasses: { [string]: GamepassConfig } = {
 }
 
 local products = {
-	--[[[3713272834] = { --Level Skip
-		onBuy = function(plr: Player)
-			local profile = DataMethods.Return(plr)
-			assert(profile, "Level Skip: profile not found")
-
-			local nextLevel = (profile.HighestLevel or 1) + 1
-			assert(nextLevel <= 3 * levelsPerPlace, "Level Skip: maximum level reached")
-
-			-- HighestLevel usa o nível global; SaveLevel recebe um nível local do mapa.
-			DataMethods.SetKey(plr, "HighestLevel", nextLevel)
-			task.defer(function()
-				if plr.Parent ~= Players then return end
-				local success, err = pcall(Teleportation.ProcessReturn, plr)
-				if not success then
-					warn("Level Skip: failed to return player to saved level", err)
-				end
-			end)
-		end
-	},]]
 	[3715524573] = { --1.5x Speed
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
@@ -74,6 +55,27 @@ local products = {
 			DataMethods.WaitForProfile(plr)
 			DataMethods.SetKey(plr, "SpeedMultiplierProduct", 3)
 			Packets.Gui.speedProductBought.sendTo({multiplier = 0}, plr)
+		end
+	},
+	[3715626326] = { --1.5x Strength
+		onBuy = function(plr: Player)
+			DataMethods.WaitForProfile(plr)
+			DataMethods.SetKey(plr, "StrengthMultiplierProduct", 1.5)
+			Packets.Gui.strengthProductBought.sendTo({multiplier = 20}, plr)
+		end
+	},
+	[3715626362] = { --2x Strength
+		onBuy = function(plr: Player)
+			DataMethods.WaitForProfile(plr)
+			DataMethods.SetKey(plr, "StrengthMultiplierProduct", 2)
+			Packets.Gui.strengthProductBought.sendTo({multiplier = 30}, plr)
+		end
+	},
+	[3715626386] = { --3x Strength
+		onBuy = function(plr: Player)
+			DataMethods.WaitForProfile(plr)
+			DataMethods.SetKey(plr, "StrengthMultiplierProduct", 3)
+			Packets.Gui.strengthProductBought.sendTo({multiplier = 0}, plr)
 		end
 	},
 }
