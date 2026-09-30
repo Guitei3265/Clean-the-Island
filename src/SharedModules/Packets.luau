@@ -35,13 +35,17 @@ local packets = {
 
     Gui = ByteNet.defineNamespace("Gui", function()
         return {
-            speedProductBought = ByteNet.definePacket({
+            requestMultipliers = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
+
+            speedMultiplierUpdate = ByteNet.definePacket({
                 value = ByteNet.struct({
                     multiplier = ByteNet.int32,
                 })
             }),
 
-            strengthProductBought = ByteNet.definePacket({
+            strengthMultiplierUpdate = ByteNet.definePacket({
                 value = ByteNet.struct({
                     multiplier = ByteNet.int32,
                 })

@@ -5,11 +5,6 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 local function Tagged(button: GuiButton)
-    if not button:GetAttribute("Id") then
-        warn("No id")
-        return
-    end
-
     (button :: GuiButton).Activated:Connect(function()
         local id = button:GetAttribute("Id")
         if not id then

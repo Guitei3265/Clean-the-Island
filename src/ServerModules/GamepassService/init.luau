@@ -39,43 +39,43 @@ local products = {
 	[3715524573] = { --1.5x Speed
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
-			DataMethods.SetKey(plr, "SpeedMultiplierProduct", 1.5)
-			Packets.Gui.speedProductBought.sendTo({multiplier = 20}, plr)
+			DataMethods.SetKey(plr, "SpeedMultiplierProduct", math.max(DataMethods.ReturnKey(plr, "SpeedMultiplierProduct"), 1.5))
+			Packets.Gui.speedMultiplierUpdate.sendTo({multiplier = DataMethods.ReturnKey(plr, "SpeedMultiplierProduct") * 10}, plr)
 		end
 	},
 	[3715524776] = { --2x Speed
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
-			DataMethods.SetKey(plr, "SpeedMultiplierProduct", 2)
-			Packets.Gui.speedProductBought.sendTo({multiplier = 30}, plr)
+			DataMethods.SetKey(plr, "SpeedMultiplierProduct", math.max(DataMethods.ReturnKey(plr, "SpeedMultiplierProduct"), 2))
+			Packets.Gui.speedMultiplierUpdate.sendTo({multiplier = DataMethods.ReturnKey(plr, "SpeedMultiplierProduct") * 10}, plr)
 		end
 	},
 	[3715524820] = { --3x Speed
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
-			DataMethods.SetKey(plr, "SpeedMultiplierProduct", 3)
-			Packets.Gui.speedProductBought.sendTo({multiplier = 0}, plr)
+			DataMethods.SetKey(plr, "SpeedMultiplierProduct", math.max(DataMethods.ReturnKey(plr, "SpeedMultiplierProduct"), 3))
+			Packets.Gui.speedMultiplierUpdate.sendTo({multiplier = DataMethods.ReturnKey(plr, "SpeedMultiplierProduct") * 10}, plr)
 		end
 	},
 	[3715626326] = { --1.5x Strength
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
-			DataMethods.SetKey(plr, "StrengthMultiplierProduct", 1.5)
-			Packets.Gui.strengthProductBought.sendTo({multiplier = 20}, plr)
+			DataMethods.SetKey(plr, "StrengthMultiplierProduct", math.max(DataMethods.ReturnKey(plr, "StrengthMultiplierProduct"), 1.5))
+			Packets.Gui.strengthMultiplierUpdate.sendTo({multiplier = DataMethods.ReturnKey(plr, "StrengthMultiplierProduct") * 10}, plr)
 		end
 	},
 	[3715626362] = { --2x Strength
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
-			DataMethods.SetKey(plr, "StrengthMultiplierProduct", 2)
-			Packets.Gui.strengthProductBought.sendTo({multiplier = 30}, plr)
+			DataMethods.SetKey(plr, "StrengthMultiplierProduct", math.max(DataMethods.ReturnKey(plr, "StrengthMultiplierProduct"), 2))
+			Packets.Gui.strengthMultiplierUpdate.sendTo({multiplier = DataMethods.ReturnKey(plr, "StrengthMultiplierProduct") * 10}, plr)
 		end
 	},
 	[3715626386] = { --3x Strength
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
-			DataMethods.SetKey(plr, "StrengthMultiplierProduct", 3)
-			Packets.Gui.strengthProductBought.sendTo({multiplier = 0}, plr)
+			DataMethods.SetKey(plr, "StrengthMultiplierProduct", math.max(DataMethods.ReturnKey(plr, "StrengthMultiplierProduct"), 3))
+			Packets.Gui.strengthMultiplierUpdate.sendTo({multiplier = DataMethods.ReturnKey(plr, "StrengthMultiplierProduct") * 10}, plr)
 		end
 	},
 }

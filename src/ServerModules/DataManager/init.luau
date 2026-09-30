@@ -96,6 +96,14 @@ function dataManager.Init()
 			profile:EndSession()
 		end
 	end)
+
+	Packets.Gui.requestMultipliers.listen(function(_, player)
+		local profile = dataManager.WaitForProfile(player)
+		if not profile then return end
+
+		Packets.Gui.speedMultiplierUpdate.sendTo({multiplier = profile.SpeedMultiplierProduct * 10}, player)
+		Packets.Gui.strengthMultiplierUpdate.sendTo({multiplier = profile.StrengthMultiplierProduct * 10}, player)
+	end)
 end
 
 return dataManager
