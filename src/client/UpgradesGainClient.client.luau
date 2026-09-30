@@ -24,8 +24,8 @@ local function GetBuff(x: number)
     return math.floor(buff)
 end
 
-local previousBuff = GetBuff(0)
-local previousStrengthBuff = GetBuff(0)
+local previousBuff = 1000000
+local previousStrengthBuff = 1000000
 
 Packets.Upgrades.updateSpeed.listen(function(data)
     --print(`Speed gained: {data.gained}`)

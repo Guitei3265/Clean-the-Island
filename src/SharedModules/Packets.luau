@@ -30,6 +30,12 @@ local packets = {
                     gained = ByteNet.int32,
                 })
             }),
+
+            requestBenchPress = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    seat = ByteNet.inst,
+                })
+            }),
         }
     end),
 
