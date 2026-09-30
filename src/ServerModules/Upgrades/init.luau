@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local CollectionService = game:GetService("CollectionService")
 
 local DataManager = require(game.ServerStorage.ServerModules.DataManager)
 local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
@@ -15,6 +16,16 @@ local strengthRemainders: {[Player]: number} = {}
 function upgrades.GetBuff(x: number)
     local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
     return math.floor(buff)
+end
+
+function upgrades.IsOnTreadmill(humanoidRootPart: BasePart)
+    local params = RaycastParams.new()
+    params.FilterType = Enum.RaycastFilterType.Include
+    params.FilterDescendantsInstances = CollectionService:GetTagged("Treadmill")
+
+    local result = workspace:Raycast(humanoidRootPart.Position, Vector3.new(0, -5, 0), params)
+
+    return result ~= nil
 end
 
 function upgrades.Walked(player: Player)
@@ -54,7 +65,9 @@ function upgrades.PlayerAdded(player: Player)
             connection:Disconnect()
         end
 
-        local humanoid = character:WaitForChild("Humanoid") :: Humanoid
+        local humanoid = character:WaitForChild("Humanoid", 3) :: Humanoid
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 3) :: BasePart
+        if not (humanoid and humanoidRootPart) then return end
 
         humanoid.WalkSpeed = 16 + upgrades.GetBuff(profile.Speed)
 
@@ -64,7 +77,7 @@ function upgrades.PlayerAdded(player: Player)
             if timer > 0.25 then
                 timer -= 0.25
 
-                if humanoid.MoveDirection.Magnitude > 0 then
+                if humanoid.MoveDirection.Magnitude > 0 or upgrades.IsOnTreadmill(humanoidRootPart) then
                     upgrades.Walked(player)
                 end
             end
