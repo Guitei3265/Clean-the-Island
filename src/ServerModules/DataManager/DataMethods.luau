@@ -74,6 +74,8 @@ end
 function dataMethods.IncreaseSpeed(plr: Player, gained: number)
 	local profile = sessionData[plr]
 
+	--gained *= 100
+
 	profile.Data.Speed += gained
 
 	Packets.Upgrades.updateSpeed.sendTo({total = profile.Data.Speed, gained = gained}, plr)

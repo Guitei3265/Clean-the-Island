@@ -7,14 +7,14 @@ local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 
 local upgrades = {}
 
-local growthFactor = 1.1
+local growthFactor = 1.08
 local segundos = 6
 
 local speedRemainders: {[Player]: number} = {}
 local strengthRemainders: {[Player]: number} = {}
 
 function upgrades.GetBuff(x: number)
-    local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
+    local buff = math.log(1 + (x * (growthFactor - 1) / 24)) / math.log(growthFactor)
     return math.floor(buff)
 end
 
