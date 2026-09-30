@@ -31,6 +31,16 @@ local packets = {
                 })
             }),
         }
+    end),
+
+    Gui = ByteNet.defineNamespace("Gui", function()
+        return {
+            speedProductBought = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    multiplier = ByteNet.int32,
+                })
+            }),
+        }
     end)
 }
 

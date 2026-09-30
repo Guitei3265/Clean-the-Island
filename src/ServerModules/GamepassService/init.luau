@@ -59,18 +59,21 @@ local products = {
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
 			DataMethods.SetKey(plr, "SpeedMultiplierProduct", 1.5)
+			Packets.Gui.speedProductBought.sendTo({multiplier = 20}, plr)
 		end
 	},
 	[3715524776] = { --2x Speed
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
 			DataMethods.SetKey(plr, "SpeedMultiplierProduct", 2)
+			Packets.Gui.speedProductBought.sendTo({multiplier = 30}, plr)
 		end
 	},
 	[3715524820] = { --3x Speed
 		onBuy = function(plr: Player)
 			DataMethods.WaitForProfile(plr)
 			DataMethods.SetKey(plr, "SpeedMultiplierProduct", 3)
+			Packets.Gui.speedProductBought.sendTo({multiplier = 0}, plr)
 		end
 	},
 }

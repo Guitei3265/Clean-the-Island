@@ -9,13 +9,24 @@ local upgrades = {}
 local growthFactor = 1.1
 local segundos = 6
 
+local speedRemainders: {[Player]: number} = {}
+
 function upgrades.GetBuff(x: number)
     local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
     return math.floor(buff)
 end
 
 function upgrades.Walked(player: Player)
-    DataManager.IncreaseSpeed(player)
+    local profile = DataManager.WaitForProfile(player)
+
+    local raw = (profile.SpeedMultiplier * profile.SpeedMultiplierProduct) + (speedRemainders[player] or 0)
+    local gained = math.floor(raw)
+
+    speedRemainders[player] = raw - gained
+
+    if gained > 0 then
+        DataManager.IncreaseSpeed(player, gained)
+    end
 end
 
 function upgrades.PlayerAdded(player: Player)
@@ -64,6 +75,10 @@ end
 
 function upgrades.Init()
     Players.PlayerAdded:Connect(upgrades.PlayerAdded)
+
+    Players.PlayerRemoving:Connect(function(player: Player)
+        speedRemainders[player] = nil
+    end)
 
     Packets.Upgrades.request.listen(function(_, player)
         upgrades.Request(player)

@@ -28,7 +28,7 @@ local previousBuff = GetBuff(0)
 local previousStrengthBuff = GetBuff(0)
 
 Packets.Upgrades.updateSpeed.listen(function(data)
-    print(`Speed gained: {data.gained}`)
+    --print(`Speed gained: {data.gained}`)
 
     totalLabel.Text = tostring(data.total)
 
@@ -43,7 +43,7 @@ Packets.Upgrades.updateSpeed.listen(function(data)
 end)
 
 Packets.Upgrades.updateStrength.listen(function(data)
-    print(`Strength gained: {data.gained}`)
+    --print(`Strength gained: {data.gained}`)
 
     strengthTotalLabel.Text = tostring(data.total)
 
