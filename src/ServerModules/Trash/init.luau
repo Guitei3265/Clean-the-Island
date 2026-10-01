@@ -3,9 +3,20 @@ local ServerStorage = game:GetService("ServerStorage")
 local Trash = {}
 
 Trash.configs = {
-    totalTrash = 10000,
+    totalTrash = 50000,
     islandRadius = 510,
-    waitInterval = 50,
+    waitInterval = 150,
+}
+
+Trash.Colors = {
+    Color3.fromRGB(162, 163, 165),
+    Color3.fromRGB(99, 95, 98),
+    Color3.fromRGB(33, 84, 185),
+    --Color3.fromRGB(123, 0, 123),
+    Color3.fromRGB(126, 104, 63),
+    Color3.fromRGB(58, 125, 21),
+    Color3.fromRGB(151, 0, 0),
+    Color3.fromRGB(255, 176, 0),
 }
 
 local trashFolder: Folder
@@ -41,10 +52,17 @@ function Trash.Spawn()
             local template = trashTemplates[math.random(1, #trashTemplates)]
 
             local randomRotation = math.rad(math.random(0, 36000) / 100)
+            local randomScale = math.random(8, 12) / 10
 
-            local trashModel = template:Clone()
-            trashModel:PivotTo(CFrame.new(result.Position) * CFrame.Angles(0, randomRotation, 0))
-            trashModel.Parent = spawnedTrashFolder
+            local trashPart: BasePart = template:Clone()
+            trashPart.Size *= randomScale
+            trashPart.Color = Trash.Colors[math.random(1, #Trash.Colors)]
+
+            local heightOffset = trashPart.Size.Y / 4
+            local spawnPosition = result.Position + Vector3.new(0, heightOffset, 0)
+
+            trashPart.CFrame = CFrame.new(spawnPosition) * CFrame.Angles(0, randomRotation, 0)
+            trashPart.Parent = spawnedTrashFolder
 
             trashRemaining -= 1
 
