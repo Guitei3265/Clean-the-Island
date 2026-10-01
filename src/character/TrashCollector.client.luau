@@ -23,10 +23,26 @@ local function hasNearbyTrash(): boolean
     return false
 end
 
-UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
-    if gameProcessedEvent or input.KeyCode ~= Enum.KeyCode.E then return end
+local SEND_INTERVAL = 0.1
 
-    if hasNearbyTrash() then
-        Packets.Game.gotTrash.send({rootPart = humanoidRootPart})
+local isHolding = false
+
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if gameProcessedEvent or input.KeyCode ~= Enum.KeyCode.E or isHolding then return end
+
+    isHolding = true
+
+    while isHolding do
+        if hasNearbyTrash() then
+            Packets.Game.gotTrash.send({rootPart = humanoidRootPart})
+        end
+
+        task.wait(SEND_INTERVAL)
     end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gameProcessedEvent)
+    if input.KeyCode ~= Enum.KeyCode.E then return end
+
+    isHolding = false
 end)
