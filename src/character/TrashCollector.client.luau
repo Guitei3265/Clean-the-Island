@@ -15,7 +15,6 @@ local function hasNearbyTrash(): boolean
 
     for _, part in ipairs(parts) do
         if CollectionService:HasTag(part, "Trash") then
-            print("Has trash")
             return true
         end
     end

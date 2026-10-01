@@ -2,6 +2,8 @@ local ServerStorage = game:GetService("ServerStorage")
 local RunService = game:GetService("RunService")
 
 local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
+local DataManager = require(game.ServerStorage.ServerModules.DataManager)
+local Upgrades = require(game.ServerStorage.ServerModules.Upgrades)
 
 local Trash = {}
 
@@ -14,6 +16,7 @@ Trash.configs = {
     layerSize = 10,
     heightStep = 0.35,
     lerpAlpha = 0.25,
+    baseCapacity = 1,
 }
 
 Trash.PlayerTrash = {} :: {[Player]: {BasePart}}
@@ -84,6 +87,13 @@ function Trash.Spawn()
     end
 end
 
+function Trash.GetCapacity(player: Player): number
+    local profile = DataManager.WaitForProfile(player)
+    if not profile then return Trash.configs.baseCapacity end
+
+    return Trash.configs.baseCapacity + Upgrades.GetBuff(profile.Strength)
+end
+
 function Trash.Events()
     Packets.Economy.sellTrash.listen(function(_, player)
         print("Player selling trash")
@@ -94,6 +104,11 @@ function Trash.Events()
         local character = player.Character
 
         if not (rootPart and rootPart:IsA("BasePart") and rootPart.Parent == character) then
+            return
+        end
+
+        local currentTrash = Trash.PlayerTrash[player]
+        if currentTrash and #currentTrash >= Trash.GetCapacity(player) then
             return
         end
 
@@ -143,7 +158,7 @@ function Trash.Init()
                 local offset: Vector3
 
                 if total == 1 then
-                    offset = Vector3.new(0, 3, 0)
+                    offset = Vector3.new(0, 4, 0)
                 else
                     local layerSize = Trash.configs.layerSize
                     local layer = (i - 1) // layerSize
