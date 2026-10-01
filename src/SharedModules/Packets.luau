@@ -39,6 +39,24 @@ local packets = {
         }
     end),
 
+    Economy = ByteNet.defineNamespace("Economy", function()
+        return {
+            sellTrash = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
+        }
+    end),
+
+    Game = ByteNet.defineNamespace("Game", function()
+        return {
+            gotTrash = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    rootPart = ByteNet.inst,
+                })
+            }),
+        }
+    end),
+
     Gui = ByteNet.defineNamespace("Gui", function()
         return {
             requestMultipliers = ByteNet.definePacket({

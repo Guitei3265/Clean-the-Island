@@ -1,4 +1,7 @@
 local ServerStorage = game:GetService("ServerStorage")
+local RunService = game:GetService("RunService")
+
+local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 
 local Trash = {}
 
@@ -6,7 +9,11 @@ Trash.configs = {
     totalTrash = 40000,
     islandRadius = 510,
     waitInterval = 150,
+    orbitRadius = 3,
+    collectDistance = 10,
 }
+
+Trash.PlayerTrash = {} :: {[Player]: {BasePart}}
 
 Trash.Colors = {
     Color3.fromHex("cc8e69"),
@@ -23,6 +30,9 @@ local trashRemaining = 0
 local raycastParams = RaycastParams.new()
 raycastParams.FilterType = Enum.RaycastFilterType.Exclude
 raycastParams.FilterDescendantsInstances = {}
+
+local collectOverlapParams = OverlapParams.new()
+collectOverlapParams.FilterType = Enum.RaycastFilterType.Include
 
 function Trash.Spawn()
     trashRemaining = Trash.configs.totalTrash
@@ -76,6 +86,63 @@ function Trash.Init()
     spawnedTrashFolder = workspace:WaitForChild("Trash")
 
     Trash.Spawn()
+
+    Packets.Economy.sellTrash.listen(function(_, player)
+        print("Player selling trash")
+    end)
+
+    Packets.Game.gotTrash.listen(function(data, player)
+        local rootPart = data.rootPart
+        local character = player.Character
+
+        if not (rootPart and rootPart:IsA("BasePart") and rootPart.Parent == character) then
+            return
+        end
+
+        collectOverlapParams.FilterDescendantsInstances = {spawnedTrashFolder}
+        local nearbyParts = workspace:GetPartBoundsInRadius(rootPart.Position, Trash.configs.collectDistance, collectOverlapParams)
+
+        local closestTrash: BasePart? = nil
+        local closestDistance = Trash.configs.collectDistance
+
+        for _, trashPart in ipairs(nearbyParts) do
+            if not trashPart:GetAttribute("Collected") then
+                local distance = (trashPart.Position - rootPart.Position).Magnitude
+
+                if distance <= closestDistance then
+                    closestDistance = distance
+                    closestTrash = trashPart
+                end
+            end
+        end
+
+        if not closestTrash then return end
+
+        closestTrash:SetAttribute("Collected", true)
+
+        Trash.PlayerTrash[player] = Trash.PlayerTrash[player] or {}
+        table.insert(Trash.PlayerTrash[player], closestTrash)
+    end)
+
+    RunService.Heartbeat:Connect(function()
+        for player, trashParts in pairs(Trash.PlayerTrash) do
+            local character = player.Character
+            local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+            if not rootPart then continue end
+
+            for i, trashPart in ipairs(trashParts) do
+                local angle = i * (2 * math.pi / #trashParts)
+
+                local offset = Vector3.new(
+                    math.cos(angle) * Trash.configs.orbitRadius,
+                    2,
+                    math.sin(angle) * Trash.configs.orbitRadius
+                )
+
+                trashPart.CFrame = CFrame.new(rootPart.Position + offset)
+            end
+        end
+    end)
 end
 
 return Trash
