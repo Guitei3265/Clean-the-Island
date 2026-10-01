@@ -3,35 +3,43 @@ local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
 
 local DataManager = require(game.ServerStorage.ServerModules.DataManager)
+local DataMethods = require(game.ServerStorage.ServerModules.DataManager.DataMethods)
 local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 
 local upgrades = {}
 
-local growthFactor = 1.08
+local growthFactor = 1.05
 local segundos = 6
 
 local speedRemainders: {[Player]: number} = {}
 local strengthRemainders: {[Player]: number} = {}
+
+local Treadmills = {
+    [1] = {Multiplier = 1.5, Island = 0},
+    [2] = {Multiplier = 3, Island = 1},
+    [3] = {Multiplier = 10, Island = 3},
+    [4] = {Multiplier = 20, Island = 10},
+}
 
 function upgrades.GetBuff(x: number)
     local buff = math.log(1 + (x * (growthFactor - 1) / 24)) / math.log(growthFactor)
     return math.floor(buff)
 end
 
-function upgrades.IsOnTreadmill(humanoidRootPart: BasePart)
+function upgrades.GetTreadmill(humanoidRootPart: BasePart): BasePart?
     local params = RaycastParams.new()
     params.FilterType = Enum.RaycastFilterType.Include
     params.FilterDescendantsInstances = CollectionService:GetTagged("Treadmill")
 
     local result = workspace:Raycast(humanoidRootPart.Position, Vector3.new(0, -5, 0), params)
 
-    return result ~= nil
+    return result and (result.Instance :: BasePart)
 end
 
-function upgrades.Walked(player: Player)
+function upgrades.Walked(player: Player, multiplier: number?)
     local profile = DataManager.WaitForProfile(player)
 
-    local raw = (profile.SpeedMultiplier * profile.SpeedMultiplierProduct) + (speedRemainders[player] or 0)
+    local raw = (profile.SpeedMultiplier * profile.SpeedMultiplierProduct * (multiplier or 1)) + (speedRemainders[player] or 0)
     local gained = math.floor(raw)
 
     speedRemainders[player] = raw - gained
@@ -77,8 +85,15 @@ function upgrades.PlayerAdded(player: Player)
             if timer > 0.25 then
                 timer -= 0.25
 
-                if humanoid.MoveDirection.Magnitude > 0 or upgrades.IsOnTreadmill(humanoidRootPart) then
-                    upgrades.Walked(player)
+                local treadmill = upgrades.GetTreadmill(humanoidRootPart)
+                local treadmillData = treadmill and Treadmills[treadmill:GetAttribute("Category")]
+
+                if treadmillData and DataMethods.ReturnKey(player, "Islands") < treadmillData.Island then
+                    treadmillData = nil
+                end
+
+                if humanoid.MoveDirection.Magnitude > 0 or treadmillData then
+                    upgrades.Walked(player, treadmillData and treadmillData.Multiplier)
                 end
             end
 

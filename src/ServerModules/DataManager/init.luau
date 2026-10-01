@@ -3,6 +3,7 @@ local ProfileStore = require(game.ServerStorage.ServerPackages.ProfileStore :: M
 local profileTemplate = {
     Cash = 0,
     Speed = 0,
+	Islands = 0,
     SpeedMultiplier = 1,
 	SpeedMultiplierProduct = 1,
     Strength = 0,
