@@ -12,7 +12,7 @@ local profileTemplate = {
 }
 
 local configs = {
-	printing = false,
+	printing = true,
 	reseting = false,
 }
 

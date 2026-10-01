@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 
 local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 local DataManager = require(game.ServerStorage.ServerModules.DataManager)
+local DataMethods = require(game.ServerStorage.ServerModules.DataManager.DataMethods)
 local Upgrades = require(game.ServerStorage.ServerModules.Upgrades)
 
 local Trash = {}
@@ -17,6 +18,7 @@ Trash.configs = {
     heightStep = 0.35,
     lerpAlpha = 0.25,
     baseCapacity = 1,
+    cashPerTrash = 5,
 }
 
 Trash.PlayerTrash = {} :: {[Player]: {BasePart}}
@@ -31,6 +33,7 @@ Trash.Colors = {
 
 local trashFolder: Folder
 local spawnedTrashFolder: Folder
+local oldTrashFolder: Folder
 local trashRemaining = 0
 
 local raycastParams = RaycastParams.new()
@@ -97,6 +100,17 @@ end
 function Trash.Events()
     Packets.Economy.sellTrash.listen(function(_, player)
         print("Player selling trash")
+
+        local trashParts = Trash.PlayerTrash[player]
+        if not trashParts or #trashParts == 0 then return end
+
+        DataMethods.GotCash(player, #trashParts * Trash.configs.cashPerTrash)
+
+        for _, trashPart in ipairs(trashParts) do
+            trashPart.Parent = oldTrashFolder
+        end
+
+        Trash.PlayerTrash[player] = nil
     end)
 
     Packets.Game.gotTrash.listen(function(data, player)
@@ -142,6 +156,7 @@ end
 function Trash.Init()
     trashFolder = ServerStorage:WaitForChild("Trash")
     spawnedTrashFolder = workspace:WaitForChild("Trash")
+    oldTrashFolder = ServerStorage:WaitForChild("OldTrash")
 
     Trash.Events()
     Trash.Spawn()

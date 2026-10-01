@@ -89,6 +89,14 @@ function dataMethods.IncreaseStrength(plr: Player, gained: number)
 	Packets.Upgrades.updateStrength.sendTo({total = profile.Data.Strength, gained = gained}, plr)
 end
 
+function dataMethods.GotCash(plr: Player, amount: number)
+	local profile = sessionData[plr]
+
+	profile.Data.Cash += amount
+
+	print(`{plr.Name} got {amount} cash`)
+end
+
 function dataMethods.ReturnKey(plr: Player, key: string)
 	return sessionData[plr].Data[key]
 end
