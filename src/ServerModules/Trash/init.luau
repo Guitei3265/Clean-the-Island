@@ -3,20 +3,17 @@ local ServerStorage = game:GetService("ServerStorage")
 local Trash = {}
 
 Trash.configs = {
-    totalTrash = 50000,
+    totalTrash = 40000,
     islandRadius = 510,
     waitInterval = 150,
 }
 
 Trash.Colors = {
+    Color3.fromHex("cc8e69"),
     Color3.fromRGB(162, 163, 165),
-    Color3.fromRGB(99, 95, 98),
-    Color3.fromRGB(33, 84, 185),
-    --Color3.fromRGB(123, 0, 123),
-    Color3.fromRGB(126, 104, 63),
-    Color3.fromRGB(58, 125, 21),
-    Color3.fromRGB(151, 0, 0),
-    Color3.fromRGB(255, 176, 0),
+    Color3.fromHex("264653"),
+    Color3.fromHex("151e3f"),
+    Color3.fromHex("030027"),
 }
 
 local trashFolder: Folder
