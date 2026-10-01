@@ -57,6 +57,22 @@ local packets = {
         }
     end),
 
+    Robux = ByteNet.defineNamespace("Robux", function()
+        return {
+            Gamepass = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    id = ByteNet.float64,
+                })
+            }),
+
+            Product = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    id = ByteNet.float64,
+                })
+            }),
+        }
+    end),
+
     Gui = ByteNet.defineNamespace("Gui", function()
         return {
             requestMultipliers = ByteNet.definePacket({
