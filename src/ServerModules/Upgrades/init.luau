@@ -8,8 +8,7 @@ local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 
 local upgrades = {}
 
-local growthFactor = 1.05
-local segundos = 6
+local growthFactor = 1.06
 
 local speedRemainders: {[Player]: number} = {}
 local strengthRemainders: {[Player]: number} = {}
@@ -22,7 +21,7 @@ local Treadmills = {
 }
 
 function upgrades.GetBuff(x: number)
-    local buff = math.log(1 + (x * (growthFactor - 1) / 24)) / math.log(growthFactor)
+    local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
     return math.floor(buff)
 end
 
@@ -86,10 +85,15 @@ function upgrades.PlayerAdded(player: Player)
                 timer -= 0.25
 
                 local treadmill = upgrades.GetTreadmill(humanoidRootPart)
-                local treadmillData = treadmill and Treadmills[treadmill:GetAttribute("Category")]
+                local category = treadmill and treadmill:GetAttribute("Category")
+                local treadmillData = treadmill and Treadmills[category]
 
                 if treadmillData and DataMethods.ReturnKey(player, "Islands") < treadmillData.Island then
-                    treadmillData = nil
+                    local unlockedGyms = DataMethods.ReturnKey(player, "UnlockedGyms")
+
+                    if table.find(unlockedGyms, category) == nil then
+                        treadmillData = nil
+                    end
                 end
 
                 if humanoid.MoveDirection.Magnitude > 0 or treadmillData then

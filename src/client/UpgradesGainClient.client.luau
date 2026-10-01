@@ -17,10 +17,10 @@ local strengthCapacityLabel = strengthFrame:WaitForChild("Capacity") :: TextLabe
 
 local upgradeSound = game:GetService("SoundService"):WaitForChild("Upgrade") :: Sound
 
-local growthFactor = 1.05
+local growthFactor = 1.06
 
 local function GetBuff(x: number)
-    local buff = math.log(1 + (x * (growthFactor - 1) / 24)) / math.log(growthFactor)
+    local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
     return math.floor(buff)
 end
 
