@@ -10,8 +10,11 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 10) :: BaseP
 if not humanoidRootPart then return end
 
 local plopSound = SoundService:WaitForChild("Plop") :: Sound
+local plopBaseVolume = plopSound.Volume
 
 Packets.Game.trashGrabbed.listen(function()
+    plopSound.PlaybackSpeed = (math.random(9, 11) / 10) * 1.1
+    plopSound.Volume = plopBaseVolume * (math.random(9, 11) / 10)
     plopSound:Play()
 end)
 

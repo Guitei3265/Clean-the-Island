@@ -44,6 +44,12 @@ local packets = {
             sellTrash = ByteNet.definePacket({
                 value = ByteNet.nothing
             }),
+
+            gotCash = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    amount = ByteNet.float64,
+                })
+            }),
         }
     end),
 

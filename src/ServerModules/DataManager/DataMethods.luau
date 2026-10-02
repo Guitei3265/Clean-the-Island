@@ -93,8 +93,8 @@ function dataMethods.GotCash(plr: Player, amount: number)
 	local profile = sessionData[plr]
 
 	profile.Data.Cash += amount
-
-	print(`{plr.Name} got {amount} cash`)
+	
+	Packets.Economy.gotCash.sendTo({amount = amount}, plr)
 end
 
 function dataMethods.ReturnKey(plr: Player, key: string)

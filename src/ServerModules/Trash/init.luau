@@ -98,6 +98,41 @@ function Trash.GetCapacity(player: Player): number
 end
 
 function Trash.Events()
+    RunService.Heartbeat:Connect(function()
+        for player, trashParts in pairs(Trash.PlayerTrash) do
+            local character = player.Character
+            local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+            if not rootPart then continue end
+
+            local total = #trashParts
+
+            for i, trashPart in ipairs(trashParts) do
+                local offset: Vector3
+
+                if total == 1 then
+                    offset = Vector3.new(0, 5, 0)
+                else
+                    local layerSize = Trash.configs.layerSize
+                    local layer = (i - 1) // layerSize
+                    local indexInLayer = (i - 1) % layerSize
+                    local itemsInLayer = math.min(layerSize, total - layer * layerSize)
+
+                    local angle = indexInLayer * (2 * math.pi / itemsInLayer)
+                    local height = 5 + (i - 1) * Trash.configs.heightStep
+
+                    offset = Vector3.new(
+                        math.cos(angle) * Trash.configs.orbitRadius,
+                        height,
+                        math.sin(angle) * Trash.configs.orbitRadius
+                    )
+                end
+
+                local targetCFrame = CFrame.new(rootPart.Position + offset)
+                trashPart.CFrame = trashPart.CFrame:Lerp(targetCFrame, Trash.configs.lerpAlpha)
+            end
+        end
+    end)
+
     Packets.Economy.sellTrash.listen(function(_, player)
         --print("Player selling trash")
 
@@ -146,7 +181,7 @@ function Trash.Events()
         if not closestTrash then return end
 
         closestTrash:SetAttribute("Collected", true)
-        closestTrash.Transparency = 0.5
+        closestTrash.Transparency = 0.3
 
         Trash.PlayerTrash[player] = Trash.PlayerTrash[player] or {}
         table.insert(Trash.PlayerTrash[player], closestTrash)
@@ -164,41 +199,6 @@ function Trash.Init()
 
     Trash.Events()
     Trash.Spawn()
-
-    RunService.Heartbeat:Connect(function()
-        for player, trashParts in pairs(Trash.PlayerTrash) do
-            local character = player.Character
-            local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-            if not rootPart then continue end
-
-            local total = #trashParts
-
-            for i, trashPart in ipairs(trashParts) do
-                local offset: Vector3
-
-                if total == 1 then
-                    offset = Vector3.new(0, 4, 0)
-                else
-                    local layerSize = Trash.configs.layerSize
-                    local layer = (i - 1) // layerSize
-                    local indexInLayer = (i - 1) % layerSize
-                    local itemsInLayer = math.min(layerSize, total - layer * layerSize)
-
-                    local angle = indexInLayer * (2 * math.pi / itemsInLayer)
-                    local height = 2 + (i - 1) * Trash.configs.heightStep
-
-                    offset = Vector3.new(
-                        math.cos(angle) * Trash.configs.orbitRadius,
-                        height,
-                        math.sin(angle) * Trash.configs.orbitRadius
-                    )
-                end
-
-                local targetCFrame = CFrame.new(rootPart.Position + offset)
-                trashPart.CFrame = trashPart.CFrame:Lerp(targetCFrame, Trash.configs.lerpAlpha)
-            end
-        end
-    end)
 end
 
 return Trash
