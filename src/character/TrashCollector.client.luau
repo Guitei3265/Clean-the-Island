@@ -18,7 +18,7 @@ Packets.Game.trashGrabbed.listen(function()
     plopSound:Play()
 end)
 
-local COLLECT_RADIUS = 6
+local COLLECT_RADIUS = 10
 local SEND_INTERVAL = 0.12
 
 local function hasNearbyTrash(): boolean
@@ -26,6 +26,10 @@ local function hasNearbyTrash(): boolean
 
     for _, part in ipairs(parts) do
         if CollectionService:HasTag(part, "Trash") then
+            if part:GetAttribute("Collected") then
+                continue
+            end
+
             return true
         end
     end

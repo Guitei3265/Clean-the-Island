@@ -13,7 +13,7 @@ Trash.configs = {
     islandRadius = 510,
     waitInterval = 150,
     orbitRadius = 4.5,
-    collectDistance = 10,
+    collectDistance = 50,
     layerSize = 10,
     heightStep = 0.35,
     lerpAlpha = 0.25,
@@ -142,6 +142,8 @@ function Trash.Events()
         DataMethods.GotCash(player, #trashParts * Trash.configs.cashPerTrash)
 
         for _, trashPart in ipairs(trashParts) do
+            trashPart:SetAttribute("Collected", false)
+            trashPart.Transparency = 0
             trashPart.Parent = oldTrashFolder
         end
 
@@ -179,7 +181,7 @@ function Trash.Events()
         end
 
         if not closestTrash then return end
-
+        
         closestTrash:SetAttribute("Collected", true)
         closestTrash.Transparency = 0.3
 
