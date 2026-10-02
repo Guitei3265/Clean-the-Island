@@ -14,8 +14,8 @@ local profileTemplate = {
 }
 
 local configs = {
-	printing = true,
-	reseting = false,
+	printing = false,
+	reseting = true,
 }
 
 if configs.reseting then

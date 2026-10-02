@@ -99,7 +99,7 @@ end
 
 function Trash.Events()
     Packets.Economy.sellTrash.listen(function(_, player)
-        print("Player selling trash")
+        --print("Player selling trash")
 
         local trashParts = Trash.PlayerTrash[player]
         if not trashParts or #trashParts == 0 then return end
@@ -150,6 +150,8 @@ function Trash.Events()
 
         Trash.PlayerTrash[player] = Trash.PlayerTrash[player] or {}
         table.insert(Trash.PlayerTrash[player], closestTrash)
+
+        DataManager.IncreaseStrength(player, 1)
     end)
 end
 

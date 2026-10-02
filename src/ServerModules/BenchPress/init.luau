@@ -25,7 +25,11 @@ function benchPress.Connect(player: Player, seat: Seat, humanoid: Humanoid)
 
         if timer > 0.25 then
             timer -= 0.25
-            Upgrades.Strengthed(player)
+
+            local category = seat:GetAttribute("Category")
+            local multiplier = Upgrades.GetStationMultiplier(player, category)
+
+            Upgrades.Strengthed(player, multiplier)
         end
     end)
 end
