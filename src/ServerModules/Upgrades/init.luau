@@ -12,12 +12,15 @@ local growthFactor = 1.06
 
 local speedRemainders: {[Player]: number} = {}
 local strengthRemainders: {[Player]: number} = {}
+local gamepassPromptDebounce: {[Player]: number} = {}
+
+local GAMEPASS_PROMPT_DEBOUNCE = 1
 
 local Treadmills = {
-    [1] = {Multiplier = 1.5, Island = 0},
-    [2] = {Multiplier = 3, Island = 1},
-    [3] = {Multiplier = 10, Island = 3},
-    [4] = {Multiplier = 20, Island = 10},
+    [1] = {Multiplier = 1, Island = 0, GamepassId = 0},
+    [2] = {Multiplier = 2, Island = 1, GamepassId = 2005844396},
+    [3] = {Multiplier = 5, Island = 3, GamepassId = 2006120380},
+    [4] = {Multiplier = 15, Island = 10, GamepassId = 2006948393},
 }
 
 function upgrades.GetBuff(x: number)
@@ -86,13 +89,20 @@ function upgrades.PlayerAdded(player: Player)
 
                 local treadmill = upgrades.GetTreadmill(humanoidRootPart)
                 local category = treadmill and treadmill:GetAttribute("Category")
-                local treadmillData = treadmill and Treadmills[category]
+                local treadmillInfo = treadmill and Treadmills[category]
+                local treadmillData = treadmillInfo
 
                 if treadmillData and DataMethods.ReturnKey(player, "Islands") < treadmillData.Island then
                     local unlockedGyms = DataMethods.ReturnKey(player, "UnlockedGyms")
 
                     if table.find(unlockedGyms, category) == nil then
                         treadmillData = nil
+
+                        local now = os.clock()
+                        if now - (gamepassPromptDebounce[player] or 0) >= GAMEPASS_PROMPT_DEBOUNCE then
+                            gamepassPromptDebounce[player] = now
+                            Packets.Robux.Gamepass.sendTo({id = treadmillInfo.GamepassId}, player)
+                        end
                     end
                 end
 
@@ -125,6 +135,7 @@ function upgrades.Init()
     Players.PlayerRemoving:Connect(function(player: Player)
         speedRemainders[player] = nil
         strengthRemainders[player] = nil
+        gamepassPromptDebounce[player] = nil
     end)
 
     Packets.Upgrades.request.listen(function(_, player)

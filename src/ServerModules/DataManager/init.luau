@@ -4,6 +4,7 @@ local profileTemplate = {
     Cash = 0,
     Speed = 0,
 	Islands = 0,
+	UnlockedGyms = {},
     SpeedMultiplier = 1,
 	SpeedMultiplierProduct = 1,
     Strength = 0,

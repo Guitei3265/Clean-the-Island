@@ -33,6 +33,42 @@ local gamepasses: { [string]: GamepassConfig } = {
 			DataMethods.SetKey(player, "DoubleCoins", false)
 		end,
 	},]]
+
+	["Gym 2"] = {
+		id = 2005844396,
+		onEquip = function(player: Player)
+			DataMethods.WaitForProfile(player)
+
+			local unlockedGyms = DataMethods.ReturnKey(player, "UnlockedGyms")
+			if table.find(unlockedGyms, 2) == nil then
+				table.insert(unlockedGyms, 2)
+			end
+		end,
+	},
+
+	["Gym 3"] = {
+		id = 2006120380,
+		onEquip = function(player: Player)
+			DataMethods.WaitForProfile(player)
+
+			local unlockedGyms = DataMethods.ReturnKey(player, "UnlockedGyms")
+			if table.find(unlockedGyms, 3) == nil then
+				table.insert(unlockedGyms, 3)
+			end
+		end,
+	},
+
+	["Gym 4"] = {
+		id = 2006948393,
+		onEquip = function(player: Player)
+			DataMethods.WaitForProfile(player)
+
+			local unlockedGyms = DataMethods.ReturnKey(player, "UnlockedGyms")
+			if table.find(unlockedGyms, 4) == nil then
+				table.insert(unlockedGyms, 4)
+			end
+		end,
+	},
 }
 
 local products = {
