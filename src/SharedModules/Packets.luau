@@ -36,6 +36,14 @@ local packets = {
                     seat = ByteNet.inst,
                 })
             }),
+
+            requestBulkPickup = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
+
+            requestReach = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
         }
     end),
 

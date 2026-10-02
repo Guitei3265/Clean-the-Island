@@ -5,6 +5,7 @@ local CollectionService = game:GetService("CollectionService")
 local DataManager = require(game.ServerStorage.ServerModules.DataManager)
 local DataMethods = require(game.ServerStorage.ServerModules.DataManager.DataMethods)
 local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
+local SharedUpgrades = require(game.ReplicatedStorage.SharedModules.Upgrades)
 
 local upgrades = {}
 
@@ -165,6 +166,28 @@ function upgrades.Init()
 
     Packets.Upgrades.request.listen(function(_, player)
         upgrades.Request(player)
+    end)
+
+    Packets.Upgrades.requestBulkPickup.listen(function(_, player)
+        local nextLevel = DataMethods.ReturnKey(player, "BulkPickup") + 1
+        local cost = SharedUpgrades.CalculateCost(nextLevel)
+
+        local cash = DataMethods.ReturnKey(player, "Cash")
+        if cash < cost then return end
+
+        DataMethods.SetKey(player, "Cash", cash - cost)
+        DataMethods.SetKey(player, "BulkPickup", nextLevel)
+    end)
+
+    Packets.Upgrades.requestReach.listen(function(_, player)
+        local nextLevel = DataMethods.ReturnKey(player, "Reach") + 1
+        local cost = SharedUpgrades.CalculateCost(nextLevel)
+
+        local cash = DataMethods.ReturnKey(player, "Cash")
+        if cash < cost then return end
+
+        DataMethods.SetKey(player, "Cash", cash - cost)
+        DataMethods.SetKey(player, "Reach", nextLevel)
     end)
 end
 
