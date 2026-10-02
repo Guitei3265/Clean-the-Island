@@ -38,22 +38,30 @@ function upgrades.GetTreadmill(humanoidRootPart: BasePart): BasePart?
     return result and (result.Instance :: BasePart)
 end
 
+function upgrades.CanUseStation(player: Player, category): boolean
+    local info = category and Stations[category]
+    if not info then return false end
+
+    if DataMethods.ReturnKey(player, "Islands") >= info.Island then
+        return true
+    end
+
+    local unlockedGyms = DataMethods.ReturnKey(player, "UnlockedGyms")
+    return table.find(unlockedGyms, category) ~= nil
+end
+
 function upgrades.GetStationMultiplier(player: Player, category): number?
     local info = category and Stations[category]
     if not info then return nil end
 
-    if DataMethods.ReturnKey(player, "Islands") < info.Island then
-        local unlockedGyms = DataMethods.ReturnKey(player, "UnlockedGyms")
-
-        if table.find(unlockedGyms, category) == nil then
-            local now = os.clock()
-            if now - (gamepassPromptDebounce[player] or 0) >= GAMEPASS_PROMPT_DEBOUNCE then
-                gamepassPromptDebounce[player] = now
-                Packets.Robux.Gamepass.sendTo({id = info.GamepassId}, player)
-            end
-
-            return nil
+    if not upgrades.CanUseStation(player, category) then
+        local now = os.clock()
+        if now - (gamepassPromptDebounce[player] or 0) >= GAMEPASS_PROMPT_DEBOUNCE then
+            gamepassPromptDebounce[player] = now
+            Packets.Robux.Gamepass.sendTo({id = info.GamepassId}, player)
         end
+
+        return nil
     end
 
     return info.Multiplier
@@ -103,6 +111,13 @@ function upgrades.PlayerAdded(player: Player)
         humanoid.WalkSpeed = 16 + upgrades.GetBuff(profile.Speed)
 
         connection = RunService.Heartbeat:Connect(function(deltaTime)
+            if player.Parent == nil or humanoidRootPart.Parent == nil then
+                if connection then
+                    connection:Disconnect()
+                end
+                return
+            end
+
             timer += deltaTime
 
             if timer > 0.25 then
@@ -136,6 +151,10 @@ function upgrades.Request(player: Player)
 end
 
 function upgrades.Init()
+    for _, player in ipairs(Players:GetPlayers()) do
+        task.spawn(upgrades.PlayerAdded, player)
+    end
+
     Players.PlayerAdded:Connect(upgrades.PlayerAdded)
 
     Players.PlayerRemoving:Connect(function(player: Player)

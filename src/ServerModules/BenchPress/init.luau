@@ -50,8 +50,13 @@ function benchPress.RequestBenchPress(data, player: Player)
 
     for _, otherSeat in seatsFolder:GetChildren() do
         if otherSeat:IsA("Seat") and not otherSeat.Occupant then
-            otherSeat:Sit(humanoid)
-            break
+            local category = otherSeat:GetAttribute("Category")
+
+            if Upgrades.CanUseStation(player, category) then
+                otherSeat:Sit(humanoid)
+
+                break
+            end
         end
     end
 end

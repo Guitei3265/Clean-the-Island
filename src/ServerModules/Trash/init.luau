@@ -151,7 +151,7 @@ function Trash.Events()
         Trash.PlayerTrash[player] = Trash.PlayerTrash[player] or {}
         table.insert(Trash.PlayerTrash[player], closestTrash)
 
-        DataManager.IncreaseStrength(player, 1)
+        Upgrades.Strengthed(player)
     end)
 end
 
