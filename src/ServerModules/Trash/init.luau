@@ -152,6 +152,8 @@ function Trash.Events()
         table.insert(Trash.PlayerTrash[player], closestTrash)
 
         Upgrades.Strengthed(player)
+
+        Packets.Game.trashGrabbed.sendTo(nil, player)
     end)
 end
 

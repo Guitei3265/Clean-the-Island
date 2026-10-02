@@ -54,6 +54,10 @@ local packets = {
                     rootPart = ByteNet.inst,
                 })
             }),
+
+            trashGrabbed = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
         }
     end),
 
