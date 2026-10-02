@@ -9,19 +9,22 @@ local Upgrades = require(game.ServerStorage.ServerModules.Upgrades)
 local Trash = {}
 
 Trash.configs = {
-    totalTrash = 40000,
+    totalTrash = 1000,
     islandRadius = 510,
     waitInterval = 150,
     orbitRadius = 4.5,
     collectDistance = 50,
     layerSize = 10,
     heightStep = 0.35,
-    lerpAlpha = 0.25,
+    lerpAlpha = 5,
     baseCapacity = 1,
     cashPerTrash = 5,
 }
 
 Trash.PlayerTrash = {} :: {[Player]: {BasePart}}
+
+local collectDebounce: {[Player]: boolean} = {}
+local COLLECT_DEBOUNCE = 0.05
 
 Trash.Colors = {
     Color3.fromHex("cc8e69"),
@@ -30,6 +33,14 @@ Trash.Colors = {
     Color3.fromHex("151e3f"),
     Color3.fromHex("030027"),
 }
+
+--[[Trash.Colors = {
+    Color3.fromHex("001524"),
+    Color3.fromHex("15616d"),
+    Color3.fromHex("ffecd1"),
+    Color3.fromHex("ff7d00"),
+    Color3.fromHex("78290f"),
+}]]
 
 local trashFolder: Folder
 local spawnedTrashFolder: Folder
@@ -47,6 +58,8 @@ function Trash.Spawn()
     trashRemaining = Trash.configs.totalTrash
 
     local trashTemplates = trashFolder:GetChildren()
+    local oldTrash = oldTrashFolder:GetChildren()
+    local oldTrashIndex = 1
 
     local iterations = 0
 
@@ -65,13 +78,21 @@ function Trash.Spawn()
         local result = workspace:Raycast(origin, direction, raycastParams)
 
         if result and result.Instance == workspace.Terrain and (result.Material == Enum.Material.Grass or result.Material == Enum.Material.Sand) then
-            local template = trashTemplates[math.random(1, #trashTemplates)]
+            local trashPart: BasePart
+
+            if oldTrashIndex <= #oldTrash then
+                trashPart = oldTrash[oldTrashIndex]
+                oldTrashIndex += 1
+            else
+                local template = trashTemplates[math.random(1, #trashTemplates)]
+                trashPart = template:Clone()
+                trashPart:SetAttribute("BaseSize", template.Size)
+            end
 
             local randomRotation = math.rad(math.random(0, 36000) / 100)
             local randomScale = math.random(8, 12) / 10
 
-            local trashPart: BasePart = template:Clone()
-            trashPart.Size *= randomScale
+            trashPart.Size = (trashPart:GetAttribute("BaseSize") :: Vector3) * randomScale
             trashPart.Color = Trash.Colors[math.random(1, #Trash.Colors)]
 
             local heightOffset = trashPart.Size.Y / 4
@@ -98,7 +119,7 @@ function Trash.GetCapacity(player: Player): number
 end
 
 function Trash.Events()
-    RunService.Heartbeat:Connect(function()
+    RunService.Heartbeat:Connect(function(deltaTime)
         for player, trashParts in pairs(Trash.PlayerTrash) do
             local character = player.Character
             local rootPart = character and character:FindFirstChild("HumanoidRootPart")
@@ -128,7 +149,8 @@ function Trash.Events()
                 end
 
                 local targetCFrame = CFrame.new(rootPart.Position + offset)
-                trashPart.CFrame = trashPart.CFrame:Lerp(targetCFrame, Trash.configs.lerpAlpha)
+                local lerp = math.min(1, Trash.configs.lerpAlpha * deltaTime)
+                trashPart.CFrame = trashPart.CFrame:Lerp(targetCFrame, lerp)
             end
         end
     end)
@@ -158,39 +180,57 @@ function Trash.Events()
             return
         end
 
-        local currentTrash = Trash.PlayerTrash[player]
-        if currentTrash and #currentTrash >= Trash.GetCapacity(player) then
+        if collectDebounce[player] then
             return
         end
 
-        collectOverlapParams.FilterDescendantsInstances = {spawnedTrashFolder}
-        local nearbyParts = workspace:GetPartBoundsInRadius(rootPart.Position, Trash.configs.collectDistance, collectOverlapParams)
+        collectDebounce[player] = true
+        task.delay(COLLECT_DEBOUNCE, function()
+            collectDebounce[player] = false
+        end)
 
-        local closestTrash: BasePart? = nil
-        local closestDistance = Trash.configs.collectDistance
+        local plrPickup = DataMethods.ReturnKey(player, "BulkPickup") or 1
+        local grabbedAny = false
 
-        for _, trashPart in ipairs(nearbyParts) do
-            if not trashPart:GetAttribute("Collected") then
-                local distance = (trashPart.Position - rootPart.Position).Magnitude
+        for i = 1, plrPickup do
+            local currentTrash = Trash.PlayerTrash[player]
+            if currentTrash and #currentTrash >= Trash.GetCapacity(player) then
+                break
+            end
 
-                if distance <= closestDistance then
-                    closestDistance = distance
-                    closestTrash = trashPart
+            collectOverlapParams.FilterDescendantsInstances = {spawnedTrashFolder}
+            local nearbyParts = workspace:GetPartBoundsInRadius(rootPart.Position, Trash.configs.collectDistance, collectOverlapParams)
+
+            local closestTrash: BasePart? = nil
+            local closestDistance = Trash.configs.collectDistance
+
+            for _, trashPart in ipairs(nearbyParts) do
+                if not trashPart:GetAttribute("Collected") then
+                    local distance = (trashPart.Position - rootPart.Position).Magnitude
+
+                    if distance <= closestDistance then
+                        closestDistance = distance
+                        closestTrash = trashPart
+                    end
                 end
             end
+
+            if not closestTrash then break end
+
+            closestTrash:SetAttribute("Collected", true)
+            closestTrash.Transparency = 0.3
+
+            Trash.PlayerTrash[player] = Trash.PlayerTrash[player] or {}
+            table.insert(Trash.PlayerTrash[player], closestTrash)
+
+            Upgrades.Strengthed(player)
+
+            grabbedAny = true
         end
 
-        if not closestTrash then return end
-        
-        closestTrash:SetAttribute("Collected", true)
-        closestTrash.Transparency = 0.3
-
-        Trash.PlayerTrash[player] = Trash.PlayerTrash[player] or {}
-        table.insert(Trash.PlayerTrash[player], closestTrash)
-
-        Upgrades.Strengthed(player)
-
-        Packets.Game.trashGrabbed.sendTo(nil, player)
+        if grabbedAny then
+            Packets.Game.trashGrabbed.sendTo(nil, player)
+        end
     end)
 end
 

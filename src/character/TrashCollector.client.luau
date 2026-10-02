@@ -44,6 +44,8 @@ local activeHolds: {[any]: boolean} = {}
 local function setHolding(source: any, holding: boolean)
     if holding then
         activeHolds[source] = true
+
+        Packets.Game.gotTrash.send({rootPart = humanoidRootPart})
     else
         activeHolds[source] = nil
     end

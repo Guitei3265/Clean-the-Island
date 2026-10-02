@@ -5,6 +5,7 @@ local profileTemplate = {
     Speed = 0,
 	Islands = 0,
 	UnlockedGyms = {},
+	BulkPickup = 1,
     SpeedMultiplier = 1,
 	SpeedMultiplierProduct = 1,
     Strength = 0,
