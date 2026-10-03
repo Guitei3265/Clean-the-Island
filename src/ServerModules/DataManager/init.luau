@@ -108,6 +108,13 @@ function dataManager.Init()
 		Packets.Gui.speedMultiplierUpdate.sendTo({multiplier = profile.SpeedMultiplierProduct * 10}, player)
 		Packets.Gui.strengthMultiplierUpdate.sendTo({multiplier = profile.StrengthMultiplierProduct * 10}, player)
 	end)
+
+	Packets.Data.requestReach.listen(function(_, player)
+		local profile = dataManager.WaitForProfile(player)
+		if not profile then return end
+
+		Packets.Data.sendReach.sendTo({reach = profile.Reach}, player)
+	end)
 end
 
 return dataManager

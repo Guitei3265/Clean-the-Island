@@ -75,7 +75,7 @@ local packets = {
 
             gotCash = ByteNet.definePacket({
                 value = ByteNet.struct({
-                    amount = ByteNet.float64,
+                    amount = ByteNet.int32,
                 })
             }),
         }
