@@ -6,5 +6,5 @@ local cashSound = SoundService:WaitForChild("Cash") :: Sound
 
 Packets.Economy.gotCash.listen(function(data)
     cashSound:Play()
-    print("Got cash: "..data.amount)
+    --print("Got cash: "..data.amount)
 end)

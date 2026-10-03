@@ -175,7 +175,7 @@ function upgrades.Init()
         local cash = DataMethods.ReturnKey(player, "Cash")
         if cash < cost then return end
 
-        DataMethods.SetKey(player, "Cash", cash - cost)
+        DataMethods.GotCash(player, -cost)
         DataMethods.SetKey(player, "BulkPickup", nextLevel)
 
         Packets.Data.sendBulkPickup.sendTo({bulkPickup = nextLevel}, player)
@@ -188,7 +188,7 @@ function upgrades.Init()
         local cash = DataMethods.ReturnKey(player, "Cash")
         if cash < cost then return end
 
-        DataMethods.SetKey(player, "Cash", cash - cost)
+        DataMethods.GotCash(player, -cost)
         DataMethods.SetKey(player, "Reach", nextLevel)
 
         Packets.Data.sendReach.sendTo({reach = nextLevel}, player)
