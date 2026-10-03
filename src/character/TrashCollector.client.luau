@@ -20,6 +20,11 @@ end)
 
 local COLLECT_RADIUS = 10
 local SEND_INTERVAL = 0.12
+local CHECK_INTERVAL = 0.05
+
+Packets.Data.sendReach.listen(function(data)
+    COLLECT_RADIUS = data.reach
+end)
 
 local function hasNearbyTrash(): boolean
     local parts = workspace:GetPartBoundsInRadius(humanoidRootPart.Position, COLLECT_RADIUS)
@@ -45,7 +50,9 @@ local function setHolding(source: any, holding: boolean)
     if holding then
         activeHolds[source] = true
 
-        Packets.Game.gotTrash.send({rootPart = humanoidRootPart})
+        if hasNearbyTrash() then
+            Packets.Game.gotTrash.send({rootPart = humanoidRootPart})
+        end
     else
         activeHolds[source] = nil
     end
@@ -61,6 +68,14 @@ local function getButtonLabel(button: GuiButton): (TextButton | TextLabel)?
     end
 
     return button:FindFirstChildWhichIsA("TextLabel", true)
+end
+
+local function setButtonsVisible(visible: boolean)
+    for _, button in ipairs(CollectionService:GetTagged("GrabButton")) do
+        if button:IsA("GuiObject") then
+            button.Visible = visible
+        end
+    end
 end
 
 local grabButtons: {[GuiButton]: true} = {}
@@ -137,3 +152,12 @@ task.spawn(function()
         task.wait(SEND_INTERVAL)
     end
 end)
+
+task.spawn(function()
+    while true do
+        setButtonsVisible(hasNearbyTrash())
+        task.wait(CHECK_INTERVAL)
+    end
+end)
+
+Packets.Data.requestReach.send()

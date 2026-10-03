@@ -47,6 +47,26 @@ local packets = {
         }
     end),
 
+    Data = ByteNet.defineNamespace("Data", function()
+        return {
+            requestReach = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
+
+            sendReach = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    reach = ByteNet.int32,
+                })
+            }),
+
+            sendBulkPickup = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    bulkPickup = ByteNet.int32,
+                })
+            }),
+        }
+    end),
+
     Economy = ByteNet.defineNamespace("Economy", function()
         return {
             sellTrash = ByteNet.definePacket({

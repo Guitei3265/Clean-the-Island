@@ -177,6 +177,8 @@ function upgrades.Init()
 
         DataMethods.SetKey(player, "Cash", cash - cost)
         DataMethods.SetKey(player, "BulkPickup", nextLevel)
+
+        Packets.Data.sendBulkPickup.sendTo({bulkPickup = nextLevel}, player)
     end)
 
     Packets.Upgrades.requestReach.listen(function(_, player)
@@ -188,6 +190,8 @@ function upgrades.Init()
 
         DataMethods.SetKey(player, "Cash", cash - cost)
         DataMethods.SetKey(player, "Reach", nextLevel)
+
+        Packets.Data.sendReach.sendTo({reach = nextLevel}, player)
     end)
 end
 
