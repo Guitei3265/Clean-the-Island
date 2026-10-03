@@ -78,6 +78,16 @@ local packets = {
                     amount = ByteNet.int32,
                 })
             }),
+
+            updateCash = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    total = ByteNet.int32,
+                })
+            }),
+
+            requestCash = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
         }
     end),
 

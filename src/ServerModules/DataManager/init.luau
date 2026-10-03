@@ -17,7 +17,7 @@ local profileTemplate = {
 
 local configs = {
 	printing = false,
-	reseting = false,
+	reseting = true,
 }
 
 if configs.reseting then
@@ -99,6 +99,13 @@ function dataManager.Init()
 		if profile ~= nil then
 			profile:EndSession()
 		end
+	end)
+
+	Packets.Economy.requestCash.listen(function(_, player)
+		local profile = dataManager.WaitForProfile(player)
+		if not profile then return end
+
+		Packets.Economy.updateCash.sendTo({total = profile.Cash}, player)
 	end)
 
 	Packets.Gui.requestMultipliers.listen(function(_, player)
