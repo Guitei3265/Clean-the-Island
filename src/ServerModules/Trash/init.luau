@@ -170,6 +170,8 @@ function Trash.Events()
         end
 
         Trash.PlayerTrash[player] = nil
+
+        Packets.Game.trashGrabbed.sendTo({count = 0}, player)
     end)
 
     Packets.Game.gotTrash.listen(function(data, player)
@@ -229,7 +231,7 @@ function Trash.Events()
         end
 
         if grabbedAny then
-            Packets.Game.trashGrabbed.sendTo(nil, player)
+            Packets.Game.trashGrabbed.sendTo({count = #Trash.PlayerTrash[player]}, player)
         end
     end)
 end

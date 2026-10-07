@@ -27,6 +27,18 @@ end
 local previousBuff = 1000000
 local previousStrengthBuff = 1000000
 
+local capacityMax = 1
+local capacityUse = 0
+
+local function updateCapacityLabel()
+    strengthCapacityLabel.Text = "Capacity: "..tostring(capacityUse).."/"..tostring(capacityMax)
+end
+
+Packets.Game.trashGrabbed.listen(function(data)
+    capacityUse = data.count
+    updateCapacityLabel()
+end)
+
 Packets.Upgrades.updateSpeed.listen(function(data)
     --print(`Speed gained: {data.gained}`)
 
@@ -48,7 +60,8 @@ Packets.Upgrades.updateStrength.listen(function(data)
     strengthTotalLabel.Text = tostring(data.total)
 
     local buff = GetBuff(data.total)
-    strengthCapacityLabel.Text = "Capacity: "..tostring(buff + 1)
+    capacityMax = buff + 1
+    updateCapacityLabel()
 
     if buff > previousStrengthBuff then
         upgradeSound:Play()

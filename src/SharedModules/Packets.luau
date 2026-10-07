@@ -104,7 +104,9 @@ local packets = {
             }),
 
             trashGrabbed = ByteNet.definePacket({
-                value = ByteNet.nothing
+                value = ByteNet.struct({
+                    count = ByteNet.int32,
+                })
             }),
         }
     end),
