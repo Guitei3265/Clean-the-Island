@@ -17,7 +17,7 @@ local profileTemplate = {
 
 local configs = {
 	printing = false,
-	reseting = true,
+	reseting = false,
 }
 
 if configs.reseting then
@@ -121,6 +121,13 @@ function dataManager.Init()
 		if not profile then return end
 
 		Packets.Data.sendReach.sendTo({reach = profile.Reach}, player)
+	end)
+
+	Packets.Data.requestBulkPickup.listen(function(_, player)
+		local profile = dataManager.WaitForProfile(player)
+		if not profile then return end
+
+		Packets.Data.sendBulkPickup.sendTo({bulkPickup = profile.BulkPickup}, player)
 	end)
 end
 

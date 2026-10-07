@@ -34,13 +34,13 @@ Trash.Colors = {
     Color3.fromHex("030027"),
 }
 
---[[Trash.Colors = {
+Trash.Colors2 = {
     Color3.fromHex("001524"),
     Color3.fromHex("15616d"),
     Color3.fromHex("ffecd1"),
     Color3.fromHex("ff7d00"),
     Color3.fromHex("78290f"),
-}]]
+}
 
 local trashFolder: Folder
 local spawnedTrashFolder: Folder

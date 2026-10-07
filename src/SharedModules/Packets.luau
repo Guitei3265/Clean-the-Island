@@ -53,6 +53,10 @@ local packets = {
                 value = ByteNet.nothing
             }),
 
+            requestBulkPickup = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
+
             sendReach = ByteNet.definePacket({
                 value = ByteNet.struct({
                     reach = ByteNet.int32,
