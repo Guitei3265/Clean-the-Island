@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Packets = require(ReplicatedStorage:WaitForChild("SharedModules"):WaitForChild("Packets"))
+local Upgrades = require(ReplicatedStorage:WaitForChild("SharedModules"):WaitForChild("Upgrades"))
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -17,11 +18,8 @@ local strengthCapacityLabel = strengthFrame:WaitForChild("Capacity") :: TextLabe
 
 local upgradeSound = game:GetService("SoundService"):WaitForChild("Upgrade") :: Sound
 
-local growthFactor = 1.06
-
 local function GetBuff(x: number)
-    local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
-    return math.floor(buff)
+    return Upgrades.GetBuff(x)
 end
 
 local previousBuff = 1000000

@@ -8,10 +8,17 @@ local Upgrades = {}
 Upgrades.configs = {
     BaseCost = 150,
     Expo = 1.5,
+    growthFactor = 1.06,
 }
 
 function Upgrades.CalculateCost(x: number): number
     return math.floor(Upgrades.configs.BaseCost * Upgrades.configs.Expo ^ (x - 1))
+end
+
+function Upgrades.GetBuff(x: number): number
+    local growthFactor = Upgrades.configs.growthFactor
+    local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
+    return math.floor(buff)
 end
 
 function Upgrades.BuyButton(button: Instance)

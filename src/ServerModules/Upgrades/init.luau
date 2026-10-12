@@ -9,8 +9,6 @@ local SharedUpgrades = require(game.ReplicatedStorage.SharedModules.Upgrades)
 
 local upgrades = {}
 
-local growthFactor = 1.06
-
 local speedRemainders: {[Player]: number} = {}
 local strengthRemainders: {[Player]: number} = {}
 local gamepassPromptDebounce: {[Player]: number} = {}
@@ -25,8 +23,7 @@ local Stations = {
 }
 
 function upgrades.GetBuff(x: number)
-    local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
-    return math.floor(buff)
+    return SharedUpgrades.GetBuff(x)
 end
 
 function upgrades.GetTreadmill(humanoidRootPart: BasePart): BasePart?
