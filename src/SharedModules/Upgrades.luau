@@ -59,7 +59,7 @@ function Upgrades.BuyButton(button: Instance)
         Packets.Data.requestBulkPickup.send()
     elseif upgrade == "Range" then
         Packets.Data.sendReach.listen(function(data)
-            label.Text = tostring(Upgrades.CalculateCost(data.reach + 1))
+            label.Text = tostring(Upgrades.CalculateCost(data.reach + 1 - 4))
 
             if levelLabel then
                 levelLabel.Text = `Lvl. {data.reach} -> {data.reach + 1}`

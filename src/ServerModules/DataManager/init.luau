@@ -1,7 +1,7 @@
 local ProfileStore = require(game.ServerStorage.ServerPackages.ProfileStore :: ModuleScript)
 
 local profileTemplate = {
-    Cash = 0,
+    Cash = 10000,
     Speed = 0,
 	Islands = 0,
 	UnlockedGyms = {},
@@ -18,7 +18,7 @@ local profileTemplate = {
 
 local configs = {
 	printing = false,
-	reseting = true,
+	reseting = false,
 }
 
 if configs.reseting then

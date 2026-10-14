@@ -182,7 +182,7 @@ function upgrades.Init()
 
     Packets.Upgrades.requestReach.listen(function(_, player)
         local nextLevel = DataMethods.ReturnKey(player, "Reach") + 1
-        local cost = SharedUpgrades.CalculateCost(nextLevel)
+        local cost = SharedUpgrades.CalculateCost(nextLevel - 4)
 
         local cash = DataMethods.ReturnKey(player, "Cash")
         if cash < cost then return end
