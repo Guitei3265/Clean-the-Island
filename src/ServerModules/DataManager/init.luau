@@ -1,7 +1,7 @@
 local ProfileStore = require(game.ServerStorage.ServerPackages.ProfileStore :: ModuleScript)
 
 local profileTemplate = {
-    Cash = 10000,
+    Cash = 150,
     Speed = 0,
 	Islands = 0,
 	UnlockedGyms = {},

@@ -42,6 +42,16 @@ end)
 
 Packets.Upgrades.request.send()
 
+local function isOnTreadmill(): boolean
+    local params = RaycastParams.new()
+    params.FilterType = Enum.RaycastFilterType.Include
+    params.FilterDescendantsInstances = CollectionService:GetTagged("Treadmill")
+
+    local result = workspace:Raycast(humanoidRootPart.Position, Vector3.new(0, -5, 0), params)
+
+    return result ~= nil
+end
+
 local function hasNearbyTrash(): boolean
     local parts = workspace:GetPartBoundsInRadius(humanoidRootPart.Position, COLLECT_RADIUS)
 
@@ -218,7 +228,7 @@ end)
 
 task.spawn(function()
     while true do
-        setButtonsVisible(hasFreeCapacity() and hasNearbyTrash())
+        setButtonsVisible(hasFreeCapacity() and hasNearbyTrash() and not isOnTreadmill())
         task.wait(CHECK_INTERVAL)
     end
 end)

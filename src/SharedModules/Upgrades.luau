@@ -8,7 +8,7 @@ local Upgrades = {}
 Upgrades.configs = {
     BaseCost = 150,
     Expo = 1.5,
-    growthFactor = 1.06,
+    growthFactor = 1.08,
     WorkoutExpo = 1.5,
 }
 
@@ -41,11 +41,11 @@ function Upgrades.BuyButton(button: Instance)
         end
     end)
 
-    local label = button:WaitForChild("TextLabel", 1) :: TextLabel?
+    local label = button:WaitForChild("TextLabel", 5) :: TextLabel?
     if not label then return end
 
     local parent = button.Parent
-    local levelLabel = parent and parent:WaitForChild("LevelLabel", 1) :: TextLabel?
+    local levelLabel = parent and parent:IsA("Frame") and parent:WaitForChild("LevelLabel", 1) :: TextLabel?
 
     if upgrade == "BulkPickup" then
         Packets.Data.sendBulkPickup.listen(function(data)
@@ -97,7 +97,41 @@ function Upgrades.UpgradePart(part: Instance)
     end)
 end
 
+function Upgrades.UpgradeGym()
+    local player = Players.LocalPlayer
+
+    while true do
+        local character = player.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+        local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+
+        local isSeated = humanoid ~= nil and humanoid.Sit
+
+        local isOnTreadmill = false
+        if humanoidRootPart then
+            local params = RaycastParams.new()
+            params.FilterType = Enum.RaycastFilterType.Include
+            params.FilterDescendantsInstances = CollectionService:GetTagged("Treadmill")
+
+            local result = workspace:Raycast(humanoidRootPart.Position, Vector3.new(0, -5, 0), params)
+            isOnTreadmill = result ~= nil
+        end
+
+        local visible = isSeated or isOnTreadmill
+
+        for _, button in ipairs(CollectionService:GetTagged("UpgradeGym")) do
+            if button:IsA("GuiObject") then
+                button.Visible = visible
+            end
+        end
+
+        task.wait(0.1)
+    end
+end
+
 function Upgrades.ClientInit()
+    task.spawn(Upgrades.UpgradeGym)
+
     for _, button in ipairs(CollectionService:GetTagged("BuyUpgrade")) do
         Upgrades.BuyButton(button)
     end
