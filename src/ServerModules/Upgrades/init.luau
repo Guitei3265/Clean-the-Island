@@ -192,6 +192,19 @@ function upgrades.Init()
 
         Packets.Data.sendReach.sendTo({reach = nextLevel}, player)
     end)
+
+    Packets.Upgrades.requestWorkoutMultiplier.listen(function(_, player)
+        local nextLevel = DataMethods.ReturnKey(player, "WorkoutMultiplier") + 1
+        local cost = SharedUpgrades.CalculateCost(nextLevel)
+
+        local cash = DataMethods.ReturnKey(player, "Cash")
+        if cash < cost then return end
+
+        DataMethods.GotCash(player, -cost)
+        DataMethods.SetKey(player, "WorkoutMultiplier", nextLevel)
+
+        Packets.Data.sendWorkoutMultiplier.sendTo({workoutMultiplier = nextLevel}, player)
+    end)
 end
 
 return upgrades

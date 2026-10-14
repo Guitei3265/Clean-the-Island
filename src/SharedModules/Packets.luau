@@ -44,6 +44,10 @@ local packets = {
             requestReach = ByteNet.definePacket({
                 value = ByteNet.nothing
             }),
+
+            requestWorkoutMultiplier = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
         }
     end),
 
@@ -57,6 +61,10 @@ local packets = {
                 value = ByteNet.nothing
             }),
 
+            requestWorkoutMultiplier = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
+
             sendReach = ByteNet.definePacket({
                 value = ByteNet.struct({
                     reach = ByteNet.int32,
@@ -66,6 +74,12 @@ local packets = {
             sendBulkPickup = ByteNet.definePacket({
                 value = ByteNet.struct({
                     bulkPickup = ByteNet.int32,
+                })
+            }),
+
+            sendWorkoutMultiplier = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    workoutMultiplier = ByteNet.int32,
                 })
             }),
         }

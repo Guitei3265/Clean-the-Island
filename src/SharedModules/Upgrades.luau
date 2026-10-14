@@ -36,6 +36,8 @@ function Upgrades.BuyButton(button: Instance)
             Packets.Upgrades.requestBulkPickup.send()
         elseif upgrade == "Range" then
             Packets.Upgrades.requestReach.send()
+        elseif upgrade == "WorkoutMultiplier" then
+            Packets.Upgrades.requestWorkoutMultiplier.send()
         end
     end)
 
@@ -65,6 +67,16 @@ function Upgrades.BuyButton(button: Instance)
         end)
 
         Packets.Data.requestReach.send()
+    elseif upgrade == "WorkoutMultiplier" then
+        Packets.Data.sendWorkoutMultiplier.listen(function(data)
+            label.Text = tostring(Upgrades.CalculateCost(data.workoutMultiplier + 1))
+
+            if levelLabel then
+                levelLabel.Text = `Lvl. {data.workoutMultiplier} -> {data.workoutMultiplier + 1}`
+            end
+        end)
+
+        Packets.Data.requestWorkoutMultiplier.send()
     end
 end
 

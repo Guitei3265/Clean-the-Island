@@ -130,6 +130,13 @@ function dataManager.Init()
 
 		Packets.Data.sendBulkPickup.sendTo({bulkPickup = profile.BulkPickup}, player)
 	end)
+
+	Packets.Data.requestWorkoutMultiplier.listen(function(_, player)
+		local profile = dataManager.WaitForProfile(player)
+		if not profile then return end
+
+		Packets.Data.sendWorkoutMultiplier.sendTo({workoutMultiplier = profile.WorkoutMultiplier}, player)
+	end)
 end
 
 return dataManager
