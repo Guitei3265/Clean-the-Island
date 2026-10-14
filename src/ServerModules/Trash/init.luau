@@ -225,8 +225,6 @@ function Trash.Events()
             Trash.PlayerTrash[player] = Trash.PlayerTrash[player] or {}
             table.insert(Trash.PlayerTrash[player], closestTrash)
 
-            Upgrades.Strengthed(player)
-
             grabbedAny = true
         end
 

@@ -68,7 +68,8 @@ end
 function upgrades.Walked(player: Player, multiplier: number?)
     local profile = DataManager.WaitForProfile(player)
 
-    local raw = (profile.SpeedMultiplier * profile.SpeedMultiplierProduct * (multiplier or 1)) + (speedRemainders[player] or 0)
+    local workoutMultiplier = SharedUpgrades.WorkoutMultiplier(1, profile.WorkoutMultiplier)
+    local raw = (profile.SpeedMultiplier * profile.SpeedMultiplierProduct * workoutMultiplier * (multiplier or 1)) + (speedRemainders[player] or 0)
     local gained = math.floor(raw)
 
     speedRemainders[player] = raw - gained
@@ -81,7 +82,8 @@ end
 function upgrades.Strengthed(player: Player, multiplier: number?)
     local profile = DataManager.WaitForProfile(player)
 
-    local raw = (profile.StrengthMultiplier * profile.StrengthMultiplierProduct * (multiplier or 1)) + (strengthRemainders[player] or 0)
+    local workoutMultiplier = SharedUpgrades.WorkoutMultiplier(1, profile.WorkoutMultiplier)
+    local raw = (profile.StrengthMultiplier * profile.StrengthMultiplierProduct * workoutMultiplier * (multiplier or 1)) + (strengthRemainders[player] or 0)
     local gained = math.floor(raw)
 
     strengthRemainders[player] = raw - gained
@@ -125,7 +127,7 @@ function upgrades.PlayerAdded(player: Player)
                 local category = treadmill and treadmill:GetAttribute("Category")
                 local multiplier = upgrades.GetStationMultiplier(player, category)
 
-                if humanoid.MoveDirection.Magnitude > 0 or multiplier then
+                if multiplier then
                     upgrades.Walked(player, multiplier)
                 end
             end

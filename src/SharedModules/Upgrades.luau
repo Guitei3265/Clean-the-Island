@@ -9,10 +9,15 @@ Upgrades.configs = {
     BaseCost = 150,
     Expo = 1.5,
     growthFactor = 1.06,
+    WorkoutExpo = 1.5,
 }
 
 function Upgrades.CalculateCost(x: number): number
     return math.floor(Upgrades.configs.BaseCost * Upgrades.configs.Expo ^ (x - 1))
+end
+
+function Upgrades.WorkoutMultiplier(workoutMultiplier: number, x: number): number
+    return workoutMultiplier * Upgrades.configs.WorkoutExpo ^ (x - 1)
 end
 
 function Upgrades.GetBuff(x: number): number
@@ -37,7 +42,8 @@ function Upgrades.BuyButton(button: Instance)
     local label = button:WaitForChild("TextLabel", 1) :: TextLabel?
     if not label then return end
 
-    local levelLabel = button.Parent:WaitForChild("LevelLabel", 1) :: TextLabel?
+    local parent = button.Parent
+    local levelLabel = parent and parent:WaitForChild("LevelLabel", 1) :: TextLabel?
 
     if upgrade == "BulkPickup" then
         Packets.Data.sendBulkPickup.listen(function(data)

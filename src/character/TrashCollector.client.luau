@@ -1,8 +1,10 @@
 local CollectionService = game:GetService("CollectionService")
 local UserInputService = game:GetService("UserInputService")
 local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
 
 local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
+local SharedUpgrades = require(game.ReplicatedStorage.SharedModules.Upgrades)
 
 local character = script.Parent
 
@@ -12,19 +14,33 @@ if not humanoidRootPart then return end
 local plopSound = SoundService:WaitForChild("Plop") :: Sound
 local plopBaseVolume = plopSound.Volume
 
-Packets.Game.trashGrabbed.listen(function()
-    plopSound.PlaybackSpeed = (math.random(9, 11) / 10) * 1.1
-    plopSound.Volume = plopBaseVolume * (math.random(9, 11) / 10)
-    plopSound:Play()
-end)
-
 local COLLECT_RADIUS = 10
 local SEND_INTERVAL = 0.12
 local CHECK_INTERVAL = 0.05
 
+local BUTTON_ORIGINAL_SIZE = UDim2.new(0.15, 0, 0.15, 0)
+local BUTTON_PRESS_SCALE = 0.7
+
 Packets.Data.sendReach.listen(function(data)
     COLLECT_RADIUS = data.reach
 end)
+
+local capacityMax = 1
+local capacityUse = 0
+
+local function hasFreeCapacity(): boolean
+    return capacityUse < capacityMax
+end
+
+Packets.Game.trashGrabbed.listen(function(data)
+    capacityUse = data.count
+end)
+
+Packets.Upgrades.updateStrength.listen(function(data)
+    capacityMax = SharedUpgrades.GetBuff(data.total) + 1
+end)
+
+Packets.Upgrades.request.send()
 
 local function hasNearbyTrash(): boolean
     local parts = workspace:GetPartBoundsInRadius(humanoidRootPart.Position, COLLECT_RADIUS)
@@ -46,12 +62,47 @@ end
 -- isHolding() fica true enquanto houver pelo menos uma fonte segurando.
 local activeHolds: {[any]: boolean} = {}
 
+local function playPressEffect(button: GuiObject)
+    local shrinkTween = TweenService:Create(
+        button,
+        TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {Size = UDim2.new(
+            BUTTON_ORIGINAL_SIZE.X.Scale * BUTTON_PRESS_SCALE,
+            BUTTON_ORIGINAL_SIZE.X.Offset * BUTTON_PRESS_SCALE,
+            BUTTON_ORIGINAL_SIZE.Y.Scale * BUTTON_PRESS_SCALE,
+            BUTTON_ORIGINAL_SIZE.Y.Offset * BUTTON_PRESS_SCALE
+        )}
+    )
+
+    local bounceTween = TweenService:Create(
+        button,
+        TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+        {Size = BUTTON_ORIGINAL_SIZE}
+    )
+
+    shrinkTween.Completed:Connect(function()
+        bounceTween:Play()
+    end)
+
+    shrinkTween:Play()
+end
+
 local function setHolding(source: any, holding: boolean)
     if holding then
         activeHolds[source] = true
 
         if hasNearbyTrash() then
             Packets.Game.gotTrash.send({rootPart = humanoidRootPart})
+
+            if typeof(source) == "Instance" and source:IsA("GuiObject") then
+                playPressEffect(source)
+            else
+                for _, button in ipairs(CollectionService:GetTagged("GrabButton")) do
+                    if button:IsA("GuiObject") then
+                        playPressEffect(button)
+                    end
+                end
+            end
         end
     else
         activeHolds[source] = nil
@@ -129,6 +180,18 @@ CollectionService:GetInstanceAddedSignal("GrabButton"):Connect(TaggedGrabButton)
 
 UserInputService.LastInputTypeChanged:Connect(updateButtonLabels)
 
+Packets.Game.trashGrabbed.listen(function()
+    plopSound.PlaybackSpeed = (math.random(9, 11) / 10) * 1.1
+    plopSound.Volume = plopBaseVolume * (math.random(9, 11) / 10)
+    plopSound:Play()
+
+    for _, button in ipairs(CollectionService:GetTagged("GrabButton")) do
+        if button:IsA("GuiObject") then
+            playPressEffect(button)
+        end
+    end
+end)
+
 UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
     if gameProcessedEvent then return end
 
@@ -155,7 +218,7 @@ end)
 
 task.spawn(function()
     while true do
-        setButtonsVisible(hasNearbyTrash())
+        setButtonsVisible(hasFreeCapacity() and hasNearbyTrash())
         task.wait(CHECK_INTERVAL)
     end
 end)

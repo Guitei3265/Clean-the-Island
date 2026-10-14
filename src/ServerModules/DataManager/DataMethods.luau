@@ -4,34 +4,6 @@ local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 local dataMethods = {}
 dataMethods.__index = dataMethods
 
---[[function dataMethods.HasEnoughCoins(plr: Player, cost: number)
-	return dataMethods.ReturnKey(plr, "Coins") >= cost
-end
-
-function dataMethods.PlayerGotCoins(plr: Player, amount: number, fromProductPurchase: boolean): boolean
-	if not (plr and plr:IsDescendantOf(game.Players) and amount) then
-		print("No player/amount")
-		return false
-	end
-
-	local profile = sessionData[plr]
-
-	if not profile then
-		print("No profile")
-		return false
-	end
-
-	if profile.Data.DoubleCoins and amount > 0 and not fromProductPurchase then
-		amount *= 2
-	end
-
-	profile.Data.Coins += amount
-
-	Packets.Data.updateCoins.sendTo({coins = profile.Data.Coins}, plr)
-
-	return true
-end]]
-
 function dataMethods.WaitForProfile(plr: Player)
 	local Time = 20
 	local profile = nil
@@ -77,7 +49,7 @@ function dataMethods.IncreaseSpeed(plr: Player, gained: number)
 	--gained *= 100
 
 	profile.Data.Speed += gained
-
+	print("Gained: "..gained)
 	Packets.Upgrades.updateSpeed.sendTo({total = profile.Data.Speed, gained = gained}, plr)
 end
 

@@ -13,11 +13,12 @@ local profileTemplate = {
     StrengthMultiplier = 1,
 	StrengthMultiplierProduct = 1,
     MaxSpeed = 1000,
+	WorkoutMultiplier = 1,
 }
 
 local configs = {
 	printing = false,
-	reseting = false,
+	reseting = true,
 }
 
 if configs.reseting then
