@@ -45,7 +45,7 @@ Packets.Upgrades.request.send()
 local function isOnTreadmill(): boolean
     local params = RaycastParams.new()
     params.FilterType = Enum.RaycastFilterType.Include
-    params.FilterDescendantsInstances = CollectionService:GetTagged("Treadmill")
+    params.FilterDescendantsInstances = CollectionService:GetTagged("GymGround")
 
     local result = workspace:Raycast(humanoidRootPart.Position, Vector3.new(0, -5, 0), params)
 
