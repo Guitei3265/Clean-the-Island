@@ -125,6 +125,16 @@ local packets = {
         }
     end),
 
+    Effects = ByteNet.defineNamespace("Effects", function()
+        return {
+            playCutscene = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    name = ByteNet.string
+                })
+            }),
+        }
+    end),
+
     Robux = ByteNet.defineNamespace("Robux", function()
         return {
             Gamepass = ByteNet.definePacket({
