@@ -17,7 +17,7 @@ function Upgrades.CalculateCost(x: number): number
 end
 
 function Upgrades.WorkoutMultiplier(workoutMultiplier: number, x: number): number
-    return workoutMultiplier * Upgrades.configs.WorkoutExpo ^ (x - 1)
+    return workoutMultiplier + 0.5 * (x - 1)
 end
 
 function Upgrades.GetBuff(x: number): number

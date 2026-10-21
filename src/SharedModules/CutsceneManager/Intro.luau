@@ -2,6 +2,8 @@ module = {}
 
 local RS = game:GetService("RunService")
 
+local introCharCFrame = CFrame.new(15.037, 44.998, -15.599) * CFrame.Angles(0, math.rad(-60), 0)
+
 local cutsceneFolder = game.ReplicatedStorage:WaitForChild("Cutscenes"):WaitForChild("Intro")
 local humAnim = cutsceneFolder:WaitForChild("Hum")
 local camAnim = cutsceneFolder:WaitForChild("Cam")
@@ -30,7 +32,8 @@ function module.Play(char: Model)
     local humTrack = animator:LoadAnimation(humAnim)
     local camTrack = camAnimator:LoadAnimation(camAnim)
 
-    camRig:PivotTo(hrp.CFrame)
+    char:PivotTo(introCharCFrame)
+    --camRig:PivotTo(hrp.CFrame)
 
     local weld = Instance.new("WeldConstraint")
     weld.Part0 = hrp
