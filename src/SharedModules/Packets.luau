@@ -132,6 +132,10 @@ local packets = {
                     name = ByteNet.string
                 })
             }),
+
+            requestIntro = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
         }
     end),
 

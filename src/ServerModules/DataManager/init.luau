@@ -3,6 +3,7 @@ local ProfileStore = require(game.ServerStorage.ServerPackages.ProfileStore :: M
 local profileTemplate = {
     Cash = 150,
     Speed = 0,
+	cutscene = false,
 	Islands = 0,
 	UnlockedGyms = {},
 	BulkPickup = 1,
@@ -136,6 +137,16 @@ function dataManager.Init()
 		if not profile then return end
 
 		Packets.Data.sendWorkoutMultiplier.sendTo({workoutMultiplier = profile.WorkoutMultiplier}, player)
+	end)
+
+	Packets.Effects.requestIntro.listen(function(_, player)
+		local profile = dataManager.WaitForProfile(player)
+		if not profile then return end
+
+		if not profile.cutscene then
+			profile.cutscene = true
+			Packets.Effects.playCutscene.sendTo({name = "Intro"}, player)
+		end
 	end)
 end
 

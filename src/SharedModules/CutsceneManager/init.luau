@@ -19,10 +19,9 @@ function cutsceneModule.Init()
     Packets.Effects.playCutscene.listen(function(data)
         cutsceneModule.PlayCutscene(data.name)
     end)
-    
-    print("Ready to play Intro")
+
     task.wait(6)
-    cutsceneModule.PlayCutscene("Intro")
+    Packets.Effects.requestIntro.send()
 end
 
 return cutsceneModule

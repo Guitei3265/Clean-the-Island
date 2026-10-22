@@ -13,7 +13,7 @@ Upgrades.configs = {
 }
 
 function Upgrades.CalculateCost(x: number): number
-    return math.floor(Upgrades.configs.BaseCost * Upgrades.configs.Expo ^ (x - 1))
+    return math.floor(Upgrades.configs.BaseCost * Upgrades.configs.Expo ^ (x - 2))
 end
 
 function Upgrades.WorkoutMultiplier(workoutMultiplier: number, x: number): number

@@ -7,19 +7,27 @@ local introCharCFrame = cutsceneFolder:WaitForChild("IntroCharCFrame")
 
 local camRig = cutsceneFolder:WaitForChild("CameraRig") :: Model
 
+local playEvent = game.ReplicatedStorage:WaitForChild("BindableEvents"):WaitForChild("Play") :: BindableEvent
+
 function module.Scene1(char: Model, hum: Humanoid, humAnimator: Animator, humHrp: BasePart, camRig: Model)
     local sceneFolder = cutsceneFolder:WaitForChild("Scene1")
     local humAnim = sceneFolder:WaitForChild("Hum") :: Animation
     local camCFrame = sceneFolder:WaitForChild("CamCFrame") :: CFrameValue
 
-    
-
     camRig:PivotTo(camCFrame.Value)
+
+    local camHRP = camRig:WaitForChild("HumanoidRootPart") :: BasePart
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = humHrp
+    weld.Part1 = camHRP
+    weld.Parent = camHRP
 
     local humTrack = humAnimator:LoadAnimation(humAnim)
     humTrack:Play(0)
 
-    task.wait(3)
+    playEvent.Event:Wait()
+
+    humTrack:Stop(0)
 end
 
 --[[
@@ -50,15 +58,9 @@ function module.SetupCutscene(char: Model, hum: Humanoid, hrp: BasePart)
         cam.CFrame = campPart.CFrame
     end)
 
-    local camHRP = camRig:WaitForChild("HumanoidRootPart") :: BasePart
     local animController = camRig:WaitForChild("AnimationController")
     local camAnimator = animController:WaitForChild("Animator") :: Animator
     camRig.Parent = workspace
-
-    local weld = Instance.new("WeldConstraint")
-    weld.Part0 = hrp
-    weld.Part1 = camHRP
-    weld.Parent = camHRP
 
     return connection, cam, camRig
 end
