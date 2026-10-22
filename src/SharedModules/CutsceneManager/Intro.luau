@@ -2,12 +2,77 @@ module = {}
 
 local RS = game:GetService("RunService")
 
-local introCharCFrame = CFrame.new(15.037, 44.998, -15.599) * CFrame.Angles(0, math.rad(-60), 0)
-
 local cutsceneFolder = game.ReplicatedStorage:WaitForChild("Cutscenes"):WaitForChild("Intro")
-local humAnim = cutsceneFolder:WaitForChild("Hum")
-local camAnim = cutsceneFolder:WaitForChild("Cam")
+local introCharCFrame = cutsceneFolder:WaitForChild("IntroCharCFrame")
+
 local camRig = cutsceneFolder:WaitForChild("CameraRig") :: Model
+
+function module.Scene1(char: Model, hum: Humanoid, humAnimator: Animator, humHrp: BasePart, camRig: Model)
+    local sceneFolder = cutsceneFolder:WaitForChild("Scene1")
+    local humAnim = sceneFolder:WaitForChild("Hum") :: Animation
+    local camCFrame = sceneFolder:WaitForChild("CamCFrame") :: CFrameValue
+
+    
+
+    camRig:PivotTo(camCFrame.Value)
+
+    local humTrack = humAnimator:LoadAnimation(humAnim)
+    humTrack:Play(0)
+
+    task.wait(3)
+end
+
+--[[
+function module.SceneX(char: Model, hum: Humanoid, humAnimator: Animator, humHrp: BasePart, camRig: Model)
+    local camRig = camRig:Clone()
+    local campPart = camRig:WaitForChild("Cam") :: BasePart
+
+    --local humTrack = animator:LoadAnimation(humAnim)
+    --local camTrack = camAnimator:LoadAnimation(camAnim)
+end
+]]
+
+function module.SetupCutscene(char: Model, hum: Humanoid, hrp: BasePart)
+    char:PivotTo(introCharCFrame.Value)
+
+    hum.WalkSpeed = 0
+    hum.JumpHeight = 7.2
+    hum.AutoRotate = false
+
+    local cam = workspace.CurrentCamera
+    cam.CameraType = Enum.CameraType.Scriptable
+
+    local camRig = camRig:Clone()
+    local campPart = camRig:WaitForChild("Cam") :: BasePart
+
+    local connection
+    connection = RS.Stepped:Connect(function()
+        cam.CFrame = campPart.CFrame
+    end)
+
+    local camHRP = camRig:WaitForChild("HumanoidRootPart") :: BasePart
+    local animController = camRig:WaitForChild("AnimationController")
+    local camAnimator = animController:WaitForChild("Animator") :: Animator
+    camRig.Parent = workspace
+
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = hrp
+    weld.Part1 = camHRP
+    weld.Parent = camHRP
+
+    return connection, cam, camRig
+end
+
+function module.Clean(connection: RBXScriptConnection, camRig: Model, cam: Camera, hum: Humanoid)
+    connection:Disconnect()
+    camRig:Destroy()
+
+    cam.CameraType = Enum.CameraType.Custom
+
+    hum.WalkSpeed = 16
+    hum.JumpHeight = 7.2
+    hum.AutoRotate = true
+end
 
 function module.Play(char: Model)
     local hum = char and char:FindFirstChild("Humanoid") :: Humanoid
@@ -18,49 +83,11 @@ function module.Play(char: Model)
         return
     end
 
-    hum.WalkSpeed = 0
-    hum.JumpHeight = 7.2
-    hum.AutoRotate = false
+    local connection, cam, camRig = module.SetupCutscene(char, hum, hrp)
+    
+    module.Scene1(char, hum, animator, hrp, camRig)
 
-    local camRig = camRig:Clone()
-    local campPart = camRig:WaitForChild("Cam") :: BasePart
-    local camHRP = camRig:WaitForChild("HumanoidRootPart") :: BasePart
-    local animController = camRig:WaitForChild("AnimationController")
-    local camAnimator = animController:WaitForChild("Animator") :: Animator
-    camRig.Parent = workspace
-
-    local humTrack = animator:LoadAnimation(humAnim)
-    local camTrack = camAnimator:LoadAnimation(camAnim)
-
-    char:PivotTo(introCharCFrame)
-    --camRig:PivotTo(hrp.CFrame)
-
-    local weld = Instance.new("WeldConstraint")
-    weld.Part0 = hrp
-    weld.Part1 = camHRP
-    weld.Parent = camHRP
-
-    local cam = workspace.CurrentCamera
-    cam.CameraType = Enum.CameraType.Scriptable
-
-    local connection
-    connection = RS.Stepped:Connect(function()
-        cam.CFrame = campPart.CFrame
-    end)
-
-    humTrack:Play(0)
-    camTrack:Play(0)
-
-    task.wait(10)
-
-    connection:Disconnect()
-    camRig:Destroy()
-
-    cam.CameraType = Enum.CameraType.Custom
-
-    hum.WalkSpeed = 16
-    hum.JumpHeight = 7.2
-    hum.AutoRotate = true
+    module.Clean(connection, camRig, cam, hum)
 end
 
 return module
