@@ -20,7 +20,6 @@ CollectionService:GetInstanceAddedSignal("Play"):Connect(Tagged)
 
 Packets.Effects.playCutscene.listen(function()
     for _, button: GuiButton in ipairs(CollectionService:GetTagged("Play")) do
-        print("Visible")
         button.Visible = true
     end
 end)
