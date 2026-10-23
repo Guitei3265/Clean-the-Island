@@ -152,8 +152,12 @@ function module.Scene3(char: Model, hum: Humanoid, humAnimator: Animator, humHrp
         errorFrame.Visible = true
 
         local toggle = false
-        while true do
+        for i = 1, 14 do
             toggle = not toggle
+
+            if toggle then
+                sounds.Error:Play()
+            end
 
             errorFrame.BackgroundColor3 = toggle and Color3.fromRGB(220, 0, 0) or Color3.fromRGB(220, 220, 220)
             if textLabel then
@@ -161,17 +165,11 @@ function module.Scene3(char: Model, hum: Humanoid, humAnimator: Animator, humHrp
             end
 
             task.wait(0.2)
-
-            if disableErrorFrame then
-                errorFrame.Visible = false
-                break
-            end
         end
+        errorFrame.Visible = false
     end)
 
     task.wait(2)
-
-    disableErrorFrame = true
 end
 
 --[[
