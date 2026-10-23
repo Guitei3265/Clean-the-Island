@@ -32,6 +32,10 @@ end
 
 --[[
 function module.SceneX(char: Model, hum: Humanoid, humAnimator: Animator, humHrp: BasePart, camRig: Model)
+    local sceneFolder = cutsceneFolder:WaitForChild("SceneX")
+    local humAnim = sceneFolder:WaitForChild("Hum") :: Animation
+    local camCFrame = sceneFolder:WaitForChild("CamCFrame") :: CFrameValue
+
     local camRig = camRig:Clone()
     local campPart = camRig:WaitForChild("Cam") :: BasePart
 
@@ -77,7 +81,7 @@ function module.Clean(connection: RBXScriptConnection, camRig: Model, cam: Camer
 end
 
 function module.Play(char: Model)
-    local hum = char and char:FindFirstChild("Humanoid") :: Humanoid
+    local hum = char and char:WaitForChild("Humanoid") :: Humanoid
     local animator = hum and hum:WaitForChild("Animator") :: Animator
     local hrp = char and char:WaitForChild("HumanoidRootPart") :: BasePart
     if not (char and hum and animator and hrp) then
