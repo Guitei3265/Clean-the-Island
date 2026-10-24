@@ -2,6 +2,7 @@ module = {}
 
 local RS = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
+local TweenService = game:GetService("TweenService")
 
 local cutsceneFolder = game.ReplicatedStorage:WaitForChild("Cutscenes"):WaitForChild("Intro")
 local introCharCFrame = cutsceneFolder:WaitForChild("IntroCharCFrame")
@@ -16,6 +17,12 @@ local explodeForce = 170
 
 local sounds = game.SoundService:WaitForChild("Intro")
 local plopSound = sounds:WaitForChild("Plop") :: Sound
+
+local camConnection
+
+local stopEmiting = false
+
+local explodedBlocks = {}
 
 local function explodeBlock(explodePart: BasePart)
     local trashChildren = trashFolder:GetChildren()
@@ -38,13 +45,17 @@ local function explodeBlock(explodePart: BasePart)
 
     block.Parent = workspace
 
+    table.insert(explodedBlocks, block)
+
     plopSound:Play()
 
     blockPart.AssemblyLinearVelocity = Vector3.new(math.random(-30, 30), math.random(explodeForce * 0.8, explodeForce * 1.2), math.random(-30, 30))
     blockPart.AssemblyAngularVelocity = Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10))
 
     task.delay(5, function()
-        block:Destroy()
+        if block then
+            block:Destroy()
+        end
     end)
 end
 
@@ -107,12 +118,12 @@ function module.Scene3(char: Model, hum: Humanoid, humAnimator: Animator, humHrp
     local camCFrame = sceneFolder:WaitForChild("CamCFrame") :: CFrameValue
     local camCFrame2 = sceneFolder:WaitForChild("CamCFrame2") :: CFrameValue
 
-    
     local campPart = camRig:WaitForChild("Cam") :: BasePart
     campPart.CFrame = camCFrame.Value
-    --[[campPart.CFrame = (camRig.PrimaryPart :: BasePart).CFrame
 
-    camRig:PivotTo(camCFrame.Value)]]
+    camConnection = RS.Stepped:Connect(function(_, deltaTime)
+        campPart.CFrame = campPart.CFrame - campPart.CFrame.LookVector * 0.06 * deltaTime
+    end)
 
     task.wait(0.1)
 
@@ -128,19 +139,18 @@ function module.Scene3(char: Model, hum: Humanoid, humAnimator: Animator, humHrp
 
     task.spawn(function()
         if explodePart then
-            for i = 1, 100 do
+            while not stopEmiting do
                 task.wait(0.1 * math.random(0.8, 1.2))
                 explodeBlock(explodePart)
             end
         end
     end)
-    
-    task.wait(1)
 
+    task.wait(1)
+    
     campPart.CFrame = camCFrame2.Value
 
     --PISCANDO AQUI
-    local disableErrorFrame = false
     task.spawn(function()
         local errorFrame = CollectionService:GetTagged("ErrorFrame")[1] :: Frame
         if not errorFrame then
@@ -152,7 +162,7 @@ function module.Scene3(char: Model, hum: Humanoid, humAnimator: Animator, humHrp
         errorFrame.Visible = true
 
         local toggle = false
-        for i = 1, 14 do
+        while not stopEmiting do
             toggle = not toggle
 
             if toggle then
@@ -170,21 +180,46 @@ function module.Scene3(char: Model, hum: Humanoid, humAnimator: Animator, humHrp
     end)
 
     task.wait(2)
+
+    camConnection:Disconnect()
 end
 
---[[
-function module.SceneX(char: Model, hum: Humanoid, humAnimator: Animator, humHrp: BasePart, camRig: Model)
-    local sceneFolder = cutsceneFolder:WaitForChild("SceneX")
+function module.Scene4(char: Model, hum: Humanoid, humAnimator: Animator, humHrp: BasePart, camRig: Model)
+    local sceneFolder = cutsceneFolder:WaitForChild("Scene4")
     local humAnim = sceneFolder:WaitForChild("Hum") :: Animation
     local camCFrame = sceneFolder:WaitForChild("CamCFrame") :: CFrameValue
 
-    local camRig = camRig:Clone()
     local campPart = camRig:WaitForChild("Cam") :: BasePart
+    campPart.CFrame = camCFrame.Value
 
-    --local humTrack = animator:LoadAnimation(humAnim)
-    --local camTrack = camAnimator:LoadAnimation(camAnim)
+    camConnection = RS.Stepped:Connect(function(_, deltaTime)
+        campPart.CFrame = campPart.CFrame - campPart.CFrame.LookVector * 0.2 * deltaTime
+    end)
+
+    local humTrack = humAnimator:LoadAnimation(humAnim)
+    humTrack:Play(0)
+
+    task.wait(3)
+    task.spawn(function()
+        local player = game.Players.LocalPlayer
+        local playerGui = player:WaitForChild("PlayerGui")
+        local blackFrame = playerGui:WaitForChild("Cutscene"):WaitForChild("BlackFrame") :: Frame
+
+        local fadeIn = TweenService:Create(blackFrame, TweenInfo.new(0.5), { BackgroundTransparency = 0 })
+        local fadeOut = TweenService:Create(blackFrame, TweenInfo.new(0.5), { BackgroundTransparency = 1 })
+
+        fadeIn:Play()
+        fadeIn.Completed:Wait()
+        task.wait(2)
+
+        fadeOut:Play()
+    end)
+
+    task.wait(1)
+    stopEmiting = true
+    camConnection:Disconnect()
+    humTrack:Stop(0)
 end
-]]
 
 function module.SetupCutscene(char: Model, hum: Humanoid, hrp: BasePart)
     char:PivotTo(introCharCFrame.Value)
@@ -215,6 +250,14 @@ function module.Clean(connection: RBXScriptConnection, camRig: Model, cam: Camer
     connection:Disconnect()
     camRig:Destroy()
 
+    for _, block in explodedBlocks do
+        block:Destroy()
+    end
+    table.clear(explodedBlocks)
+
+    local camEndCFrame = game.ReplicatedStorage.Cutscenes.Intro:WaitForChild("CamEndCFrame") :: CFrameValue
+    cam.CFrame = camEndCFrame.Value
+
     cam.CameraType = Enum.CameraType.Custom
 
     hum.WalkSpeed = 16
@@ -236,6 +279,7 @@ function module.Play(char: Model)
     module.Scene1(char, hum, animator, hrp, camRig)
     module.Scene2(char, hum, animator, hrp, camRig)
     module.Scene3(char, hum, animator, hrp, camRig)
+    module.Scene4(char, hum, animator, hrp, camRig)
 
     module.Clean(connection, camRig, cam, hum)
 end
