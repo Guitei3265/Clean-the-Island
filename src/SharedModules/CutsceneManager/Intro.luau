@@ -246,7 +246,7 @@ function module.SetupCutscene(char: Model, hum: Humanoid, hrp: BasePart)
     return connection, cam, camRig
 end
 
-function module.Clean(connection: RBXScriptConnection, camRig: Model, cam: Camera, hum: Humanoid)
+function module.Clean(connection: RBXScriptConnection, camRig: Model, cam: Camera, hum: Humanoid, char: Model)
     connection:Disconnect()
     camRig:Destroy()
 
@@ -263,6 +263,8 @@ function module.Clean(connection: RBXScriptConnection, camRig: Model, cam: Camer
     hum.WalkSpeed = 16
     hum.JumpHeight = 7.2
     hum.AutoRotate = true
+
+    char:PivotTo(CFrame.new(-12.13, 42.5, 2.42))
 end
 
 function module.Play(char: Model)
@@ -281,7 +283,7 @@ function module.Play(char: Model)
     module.Scene3(char, hum, animator, hrp, camRig)
     module.Scene4(char, hum, animator, hrp, camRig)
 
-    module.Clean(connection, camRig, cam, hum)
+    module.Clean(connection, camRig, cam, hum, char)
 end
 
 return module
