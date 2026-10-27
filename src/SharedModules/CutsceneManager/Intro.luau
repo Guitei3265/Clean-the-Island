@@ -4,6 +4,8 @@ local RS = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
 local TweenService = game:GetService("TweenService")
 
+local Packets = require(game.ReplicatedStorage:WaitForChild("SharedModules"):WaitForChild("Packets"))
+
 local cutsceneFolder = game.ReplicatedStorage:WaitForChild("Cutscenes"):WaitForChild("Intro")
 local introCharCFrame = cutsceneFolder:WaitForChild("IntroCharCFrame")
 
@@ -265,6 +267,8 @@ function module.Clean(connection: RBXScriptConnection, camRig: Model, cam: Camer
     hum.AutoRotate = true
 
     char:PivotTo(CFrame.new(-12.13, 42.5, 2.42))
+
+    Packets.Game.requestTutorial.send({number = 2})
 end
 
 function module.Play(char: Model)

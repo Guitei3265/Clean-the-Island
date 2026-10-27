@@ -124,7 +124,9 @@ local packets = {
             }),
 
             requestTutorial = ByteNet.definePacket({
-                value = ByteNet.nothing
+                value = ByteNet.struct({
+                    number = ByteNet.int32,
+                })
             }),
         }
     end),

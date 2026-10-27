@@ -46,7 +46,7 @@ function cutsceneModule.Init()
 
     cutsceneModule.Preload()
 
-    Packets.Game.requestTutorial.send()
+    Packets.Game.requestTutorial.send({number = 1})
 end
 
 return cutsceneModule

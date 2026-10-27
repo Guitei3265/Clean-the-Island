@@ -8,6 +8,10 @@ function Tutorial.Stage1(player, profile)
 	Packets.Effects.playCutscene.sendTo({name = "Intro"}, player)
 end
 
+function Tutorial.Stage2(player, profile)
+	Packets.Effects.tutorialText.sendTo({text = "Grab a block"}, player)
+end
+
 function Tutorial.StartTutorial(player, profile)
 	local i = 1
 
@@ -18,11 +22,16 @@ function Tutorial.StartTutorial(player, profile)
 		stage(player, profile)
 
 		i += 1
+
+		task.wait()
+		Packets.Game.requestTutorial.wait()
 	end
 end
 
 function Tutorial.Init()
-	Packets.Game.requestTutorial.listen(function(_, player)
+	Packets.Game.requestTutorial.listen(function(data, player)
+		if data.number ~= 1 then return end
+
 		local profile = DataManager.WaitForProfile(player)
 		if not profile then return end
 
