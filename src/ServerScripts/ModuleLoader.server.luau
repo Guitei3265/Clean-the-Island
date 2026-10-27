@@ -3,10 +3,11 @@ local modulesFolder = game.ServerStorage.ServerModules
 local dataModule = require(modulesFolder:WaitForChild("DataManager"))
 dataModule.Init()
 
-local skip = {"DataManager"}
+local skip = {"DataManager", "Trash"}
 
 for _, module: ModuleScript in pairs(modulesFolder:GetChildren()) do
     if module:IsA("ModuleScript") and not table.find(skip, module.Name) then
+        
         local success, err = pcall(function()
             local requiredModule = require(module)
 
@@ -20,3 +21,6 @@ for _, module: ModuleScript in pairs(modulesFolder:GetChildren()) do
         end
     end
 end
+
+local trashModule = require(modulesFolder:WaitForChild("Trash"))
+trashModule.Init()

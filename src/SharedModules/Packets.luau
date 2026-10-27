@@ -122,6 +122,10 @@ local packets = {
                     count = ByteNet.int32,
                 })
             }),
+
+            requestTutorial = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
         }
     end),
 
@@ -133,8 +137,10 @@ local packets = {
                 })
             }),
 
-            requestIntro = ByteNet.definePacket({
-                value = ByteNet.nothing
+            tutorialText = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    text = ByteNet.string
+                })
             }),
         }
     end),

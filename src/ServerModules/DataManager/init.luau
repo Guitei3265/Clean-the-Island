@@ -139,15 +139,6 @@ function dataManager.Init()
 		Packets.Data.sendWorkoutMultiplier.sendTo({workoutMultiplier = profile.WorkoutMultiplier}, player)
 	end)
 
-	Packets.Effects.requestIntro.listen(function(_, player)
-		local profile = dataManager.WaitForProfile(player)
-		if not profile then return end
-
-		if not profile.cutscene then
-			profile.cutscene = true
-			Packets.Effects.playCutscene.sendTo({name = "Intro"}, player)
-		end
-	end)
 end
 
 return dataManager
