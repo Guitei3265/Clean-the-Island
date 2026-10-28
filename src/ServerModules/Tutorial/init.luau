@@ -23,6 +23,14 @@ function Tutorial.Stage4(player, profile)
 	Packets.Effects.gymBeam.sendTo(nil, player)
 end
 
+function Tutorial.Stage5(player, profile)
+	Packets.Effects.tutorialText.sendTo({text = "Tutorial Concluded!"}, player)
+
+	task.delay(5, function()
+		Packets.Effects.tutorialText.sendTo({text = ""}, player)
+	end)
+end
+
 function Tutorial.StartTutorial(player, profile)
 	local i = 1
 
