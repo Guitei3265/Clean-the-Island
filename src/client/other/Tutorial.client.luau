@@ -21,12 +21,12 @@ local function getNearestTagged(tag: string, position: Vector3): BasePart?
 
         local distance = (part.Position - position).Magnitude
         if not nearestDistance or distance < nearestDistance then
-            nearest = part
+							nearest = part
             nearestDistance = distance
-        end
-    end
+		end
+	end
 
-    return nearest
+	return nearest
 end
 
 local function destroyBeams()
@@ -58,6 +58,7 @@ Packets.Effects.trashBeam.listen(function()
     if not trash then return end
 
     local beam = arrowsBeamTemplate:Clone()
+    beam.Color = ColorSequence.new(Color3.fromRGB(255, 140, 0))
 
     local attachment0 = Instance.new("Attachment")
     attachment0.Parent = trash
@@ -124,4 +125,14 @@ Packets.Game.trashGrabbed.listen(function(data)
     requestedStage3 = true
 
     Packets.Game.requestTutorial.send({number = 3})
+end)
+
+local requestedStage4 = false
+
+Packets.Economy.gotCash.listen(function()
+    if requestedStage4 then return end
+    requestedStage4 = true
+
+    destroyBeams()
+    Packets.Game.requestTutorial.send({number = 4})
 end)
