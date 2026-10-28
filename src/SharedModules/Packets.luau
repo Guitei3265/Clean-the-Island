@@ -144,6 +144,14 @@ local packets = {
                     text = ByteNet.string
                 })
             }),
+
+            trashBeam = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
+
+            sellBeam = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
         }
     end),
 

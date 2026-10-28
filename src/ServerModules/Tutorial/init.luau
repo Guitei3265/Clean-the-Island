@@ -10,6 +10,16 @@ end
 
 function Tutorial.Stage2(player, profile)
 	Packets.Effects.tutorialText.sendTo({text = "Grab a block"}, player)
+	Packets.Effects.trashBeam.sendTo(nil, player)
+end
+
+function Tutorial.Stage3(player, profile)
+	Packets.Effects.tutorialText.sendTo({text = "Sell the block"}, player)
+	Packets.Effects.sellBeam.sendTo(nil, player)
+end
+
+function Tutorial.Stage4(player, profile)
+	Packets.Effects.tutorialText.sendTo({text = ""}, player)
 end
 
 function Tutorial.StartTutorial(player, profile)
