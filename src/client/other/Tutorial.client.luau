@@ -137,6 +137,45 @@ Packets.Effects.sellBeam.listen(function()
     table.insert(beams, beam)
 end)
 
+Packets.Effects.gymBeam.listen(function()
+    destroyBeams()
+
+    local character = player.Character
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart") :: BasePart
+    if not rootPart then return end
+
+    local gymBeamPart = getNearestTagged("GymBeam", rootPart.Position)
+    if not gymBeamPart then return end
+
+    local beam = arrowsBeamTemplate:Clone()
+    beam.Color = ColorSequence.new(Color3.fromRGB(135, 206, 250))
+
+    local attachment0 = Instance.new("Attachment")
+    attachment0.Parent = gymBeamPart
+
+    local attachment1 = Instance.new("Attachment")
+    attachment1.Parent = rootPart
+
+    beam.Attachment0 = attachment0
+    beam.Attachment1 = attachment1
+    beam.Parent = rootPart
+
+    table.insert(beams, beam)
+end)
+
+local requestedStage5 = false
+
+local function onReachedGym(data)
+    if requestedStage5 or data.gained <= 0 then return end
+    requestedStage5 = true
+
+    destroyBeams()
+    Packets.Game.requestTutorial.send({number = 5})
+end
+
+Packets.Upgrades.updateSpeed.listen(onReachedGym)
+Packets.Upgrades.updateStrength.listen(onReachedGym)
+
 local requestedStage3 = false
 
 Packets.Game.trashGrabbed.listen(function(data)

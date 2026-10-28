@@ -19,7 +19,8 @@ function Tutorial.Stage3(player, profile)
 end
 
 function Tutorial.Stage4(player, profile)
-	Packets.Effects.tutorialText.sendTo({text = ""}, player)
+	Packets.Effects.tutorialText.sendTo({text = "Go to the gym"}, player)
+	Packets.Effects.gymBeam.sendTo(nil, player)
 end
 
 function Tutorial.StartTutorial(player, profile)

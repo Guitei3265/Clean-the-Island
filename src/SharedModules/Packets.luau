@@ -152,6 +152,10 @@ local packets = {
             sellBeam = ByteNet.definePacket({
                 value = ByteNet.nothing
             }),
+
+            gymBeam = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
         }
     end),
 
