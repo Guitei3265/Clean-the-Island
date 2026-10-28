@@ -12,21 +12,40 @@ local arrowsBeamTemplate = ReplicatedStorage:WaitForChild("Effects"):WaitForChil
 local beams = {}
 local trackingConnection: RBXScriptConnection?
 
+local ringStartRadius = 16
+local ringMaxRadius = 4096
+
 local function getNearestTagged(tag: string, position: Vector3): BasePart?
-    local nearest: BasePart
-    local nearestDistance: number
+    local taggedParts = CollectionService:GetTagged(tag)
+    if #taggedParts == 0 then return end
 
-    for _, part: BasePart in ipairs(CollectionService:GetTagged(tag)) do
-        if part:GetAttribute("Collected") then continue end
+    local overlapParams = OverlapParams.new()
+    overlapParams.FilterType = Enum.RaycastFilterType.Include
+    overlapParams.FilterDescendantsInstances = taggedParts
 
-        local distance = (part.Position - position).Magnitude
-        if not nearestDistance or distance < nearestDistance then
-							nearest = part
-            nearestDistance = distance
-		end
-	end
+    local radius = ringStartRadius
+    while radius <= ringMaxRadius do
+        local nearest: BasePart
+        local nearestDistance: number
 
-	return nearest
+        for _, part: BasePart in ipairs(workspace:GetPartBoundsInRadius(position, radius, overlapParams)) do
+            if part:GetAttribute("Collected") then continue end
+
+            local distance = (part.Position - position).Magnitude
+            if not nearestDistance or distance < nearestDistance then
+                nearest = part
+                nearestDistance = distance
+            end
+        end
+
+        if nearest then
+            return nearest
+        end
+
+        radius *= 2
+    end
+
+    return nil
 end
 
 local function destroyBeams()
