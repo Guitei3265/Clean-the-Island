@@ -9,6 +9,8 @@ local function Tagged(button: GuiButton)
     (button :: GuiButton).Activated:Connect(function()
         playEvent:Fire()
         button.Visible = false
+
+        Packets.Funnels.onboarding.send({number = 2})
     end)
 end
 

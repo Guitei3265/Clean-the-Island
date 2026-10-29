@@ -193,6 +193,16 @@ local packets = {
                 })
             }),
         }
+    end),
+
+    Funnels = ByteNet.defineNamespace("Funnels", function()
+        return {
+            onboarding = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    number = ByteNet.int32,
+                })
+            }),
+        }
     end)
 }
 

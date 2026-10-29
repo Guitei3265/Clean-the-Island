@@ -1,5 +1,6 @@
 local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 local DataManager = require(game.ServerStorage.ServerModules.DataManager)
+local Funnels = require(game.ServerStorage.ServerModules.Funnels)
 
 local Tutorial = {}
 
@@ -9,25 +10,35 @@ function Tutorial.Stage1(player, profile)
 end
 
 function Tutorial.Stage2(player, profile)
+	Funnels.LogStep(player, 3)
+
 	Packets.Effects.tutorialText.sendTo({text = "Grab a block"}, player)
 	Packets.Effects.trashBeam.sendTo(nil, player)
 end
 
 function Tutorial.Stage3(player, profile)
+	Funnels.LogStep(player, 4)
+
 	Packets.Effects.tutorialText.sendTo({text = "Sell the block"}, player)
 	Packets.Effects.sellBeam.sendTo(nil, player)
 end
 
 function Tutorial.Stage4(player, profile)
+	Funnels.LogStep(player, 5)
+
 	Packets.Effects.tutorialText.sendTo({text = "Go to the gym"}, player)
 	Packets.Effects.gymBeam.sendTo(nil, player)
 end
 
 function Tutorial.Stage5(player, profile)
+	Funnels.LogStep(player, 6)
+
 	Packets.Effects.tutorialText.sendTo({text = "Try buying a gym upgrade"}, player)
 end
 
 function Tutorial.Stage6(player, profile)
+	Funnels.LogStep(player, 7)
+
 	Packets.Effects.tutorialText.sendTo({text = "Tutorial Concluded!"}, player)
 
 	task.delay(5, function()
