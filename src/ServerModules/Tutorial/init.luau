@@ -24,6 +24,10 @@ function Tutorial.Stage4(player, profile)
 end
 
 function Tutorial.Stage5(player, profile)
+	Packets.Effects.tutorialText.sendTo({text = "Try buying a gym upgrade"}, player)
+end
+
+function Tutorial.Stage6(player, profile)
 	Packets.Effects.tutorialText.sendTo({text = "Tutorial Concluded!"}, player)
 
 	task.delay(5, function()

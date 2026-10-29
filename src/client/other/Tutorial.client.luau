@@ -2,10 +2,13 @@ local Players = game:GetService("Players")
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local Packets = require(ReplicatedStorage.SharedModules.Packets)
 
 local player = Players.LocalPlayer
+
+local upgradeSound = game.SoundService:WaitForChild("Upgrade")
 
 local arrowsBeamTemplate = ReplicatedStorage:WaitForChild("Effects"):WaitForChild("ArrowsBeam") :: Beam
 
@@ -66,7 +69,7 @@ local function destroyBeams()
     table.clear(beams)
 end
 
-Packets.Effects.trashBeam.listen(function()
+local function Stage2()
     destroyBeams()
 
     local character = player.Character
@@ -84,7 +87,7 @@ Packets.Effects.trashBeam.listen(function()
 
     local attachment1 = Instance.new("Attachment")
     attachment1.Parent = rootPart
-    
+
     beam.Attachment0 = attachment0
     beam.Attachment1 = attachment1
     beam.Parent = rootPart
@@ -109,9 +112,10 @@ Packets.Effects.trashBeam.listen(function()
             attachment0.Parent = nearest
         end
     end)
-end)
+end
 
-Packets.Effects.sellBeam.listen(function()
+local function Stage3()
+    upgradeSound:Play()
     destroyBeams()
 
     local character = player.Character
@@ -135,9 +139,9 @@ Packets.Effects.sellBeam.listen(function()
     beam.Parent = rootPart
 
     table.insert(beams, beam)
-end)
+end
 
-Packets.Effects.gymBeam.listen(function()
+local function Stage4()
     destroyBeams()
 
     local character = player.Character
@@ -161,20 +165,58 @@ Packets.Effects.gymBeam.listen(function()
     beam.Parent = rootPart
 
     table.insert(beams, beam)
-end)
+end
+
+local STAGE5_STROKE_TWEEN_TIME = 1
 
 local requestedStage5 = false
-
-local function onReachedGym(data)
+local function Stage5(data)
     if requestedStage5 or data.gained <= 0 then return end
     requestedStage5 = true
 
-    destroyBeams()
+    upgradeSound:Play()
     Packets.Game.requestTutorial.send({number = 5})
+
+    for _, stroke: UIStroke in ipairs(CollectionService:GetTagged("Stage5Stroke")) do
+        stroke.Enabled = true
+
+        TweenService:Create(stroke, TweenInfo.new(STAGE5_STROKE_TWEEN_TIME), {
+            BorderOffset = UDim.new(0.2, 0),
+            Transparency = 0.1,
+        }):Play()
+    end
 end
 
-Packets.Upgrades.updateSpeed.listen(onReachedGym)
-Packets.Upgrades.updateStrength.listen(onReachedGym)
+local function Stage6(data)
+    if data.workoutMultiplier == 1 then return end
+
+    destroyBeams()
+    Packets.Game.requestTutorial.send({number = 6})
+
+    for _, stroke: UIStroke in ipairs(CollectionService:GetTagged("Stage5Stroke")) do
+        local tween = TweenService:Create(stroke, TweenInfo.new(STAGE5_STROKE_TWEEN_TIME / 4), {
+            BorderOffset = UDim.new(10, 0),
+            Transparency = 1,
+        })
+
+        tween.Completed:Once(function()
+            stroke.Enabled = false
+        end)
+
+        tween:Play()
+    end
+end
+
+Packets.Effects.trashBeam.listen(Stage2)
+
+Packets.Effects.sellBeam.listen(Stage3)
+
+Packets.Effects.gymBeam.listen(Stage4)
+
+Packets.Upgrades.updateSpeed.listen(Stage5)
+Packets.Upgrades.updateStrength.listen(Stage5)
+
+Packets.Data.sendWorkoutMultiplier.listen(Stage6)
 
 local requestedStage3 = false
 
