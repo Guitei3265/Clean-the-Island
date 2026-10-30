@@ -156,6 +156,12 @@ local packets = {
             gymBeam = ByteNet.definePacket({
                 value = ByteNet.nothing
             }),
+
+            BPBar = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    bar = ByteNet.inst,
+                })
+            }),
         }
     end),
 
@@ -200,6 +206,20 @@ local packets = {
             onboarding = ByteNet.definePacket({
                 value = ByteNet.struct({
                     number = ByteNet.int32,
+                })
+            }),
+        }
+    end),
+
+    Clima = ByteNet.defineNamespace("Clima", function()
+        return {
+            requestWeather = ByteNet.definePacket({
+                value = ByteNet.nothing
+            }),
+
+            sendWeather = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    weather = ByteNet.string,
                 })
             }),
         }
