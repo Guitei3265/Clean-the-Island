@@ -141,7 +141,10 @@ local function Stage3()
     table.insert(beams, beam)
 end
 
+local ranStage4 = false
+
 local function Stage4()
+    ranStage4 = true
     destroyBeams()
 
     local character = player.Character
@@ -177,13 +180,15 @@ local function Stage5(data)
     upgradeSound:Play()
     Packets.Game.requestTutorial.send({number = 5})
 
-    for _, stroke: UIStroke in ipairs(CollectionService:GetTagged("Stage5Stroke")) do
-        stroke.Enabled = true
+    if ranStage4 then
+        for _, stroke: UIStroke in ipairs(CollectionService:GetTagged("Stage5Stroke")) do
+            stroke.Enabled = true
 
-        TweenService:Create(stroke, TweenInfo.new(STAGE5_STROKE_TWEEN_TIME), {
-            BorderOffset = UDim.new(0.2, 0),
-            Transparency = 0.1,
-        }):Play()
+            TweenService:Create(stroke, TweenInfo.new(STAGE5_STROKE_TWEEN_TIME), {
+                BorderOffset = UDim.new(0.2, 0),
+                Transparency = 0.1,
+            }):Play()
+        end
     end
 end
 
@@ -193,17 +198,19 @@ local function Stage6(data)
     destroyBeams()
     Packets.Game.requestTutorial.send({number = 6})
 
-    for _, stroke: UIStroke in ipairs(CollectionService:GetTagged("Stage5Stroke")) do
-        local tween = TweenService:Create(stroke, TweenInfo.new(STAGE5_STROKE_TWEEN_TIME / 4), {
-            BorderOffset = UDim.new(10, 0),
-            Transparency = 1,
-        })
+    if ranStage4 then
+        for _, stroke: UIStroke in ipairs(CollectionService:GetTagged("Stage5Stroke")) do
+            local tween = TweenService:Create(stroke, TweenInfo.new(STAGE5_STROKE_TWEEN_TIME / 4), {
+                BorderOffset = UDim.new(12, 0),
+                Transparency = 1,
+            })
 
-        tween.Completed:Once(function()
-            stroke.Enabled = false
-        end)
+            tween.Completed:Once(function()
+                stroke.Enabled = false
+            end)
 
-        tween:Play()
+            tween:Play()
+        end
     end
 end
 
