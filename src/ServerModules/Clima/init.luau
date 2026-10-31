@@ -1,4 +1,5 @@
 local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
+local DataMethods = require(game.ServerStorage.ServerModules.DataManager.DataMethods)
 
 local clima = {}
 
@@ -40,16 +41,26 @@ end
 
 function clima.Init()
     Packets.Clima.requestWeather.listen(function(_, player)
+        local profile = DataMethods.WaitForProfile(player)
+
+        if not profile or not profile.cutscene then
+            print("Cutscene")
+            Packets.Clima.sendWeather.sendTo({weather = "Sunny"}, player)
+            return
+        end
+
         Packets.Clima.sendWeather.sendTo({weather = currentWeather}, player)
     end)
 
     task.spawn(function()
-        while task.wait(weatherTime) do
+        while true do
             local success, err = pcall(clima.Iteracao)
 
             if not success then
                 warn(err)
             end
+
+            task.wait(weatherTime)
         end
     end)
 end

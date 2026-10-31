@@ -21,10 +21,22 @@ local sounds = game.SoundService:WaitForChild("Intro")
 local plopSound = sounds:WaitForChild("Plop") :: Sound
 
 local camConnection
+local trashConnection: RBXScriptConnection
 
 local stopEmiting = false
 
 local explodedBlocks = {}
+
+local StarterGui = game:GetService("StarterGui")
+local function setResetEnabled(enabled)
+	local success = false
+	while not success do
+		success = pcall(function()
+			StarterGui:SetCore("ResetButtonCallback", enabled)
+		end)
+		if not success then task.wait(0.1) end
+	end
+end
 
 local function explodeBlock(explodePart: BasePart)
     local trashChildren = trashFolder:GetChildren()
@@ -54,11 +66,19 @@ local function explodeBlock(explodePart: BasePart)
     blockPart.AssemblyLinearVelocity = Vector3.new(math.random(-30, 30), math.random(explodeForce * 0.8, explodeForce * 1.2), math.random(-30, 30))
     blockPart.AssemblyAngularVelocity = Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10))
 
-    task.delay(5, function()
-        if block then
-            block:Destroy()
-        end
+    task.delay(1, function()
+        blockPart.CanCollide = true
+        local clone = blockPart:Clone()
+        table.insert(explodedBlocks, clone)
     end)
+
+end
+
+local function destroyBlocks()
+    for _, block in explodedBlocks do
+        block:Destroy()
+    end
+    table.clear(explodedBlocks)
 end
 
 function module.Scene1(char: Model, hum: Humanoid, humAnimator: Animator, humHrp: BasePart, camRig: Model)
@@ -224,6 +244,8 @@ function module.Scene4(char: Model, hum: Humanoid, humAnimator: Animator, humHrp
 end
 
 function module.SetupCutscene(char: Model, hum: Humanoid, hrp: BasePart)
+    setResetEnabled(false)
+
     char:PivotTo(introCharCFrame.Value)
 
     hum.WalkSpeed = 0
@@ -245,6 +267,18 @@ function module.SetupCutscene(char: Model, hum: Humanoid, hrp: BasePart)
     local camAnimator = animController:WaitForChild("Animator") :: Animator
     camRig.Parent = workspace
 
+    trashConnection = CollectionService:GetInstanceAddedSignal("Trash"):Connect(function(part)
+        if part:IsA("BasePart") then
+            part.Transparency = 1
+        end
+    end)
+
+    for _, part in ipairs(CollectionService:GetTagged("Trash")) do
+        if part:IsA("BasePart") and part.Transparency ~= 1 then
+            part.Transparency = 1
+        end
+    end
+
     return connection, cam, camRig
 end
 
@@ -252,10 +286,14 @@ function module.Clean(connection: RBXScriptConnection, camRig: Model, cam: Camer
     connection:Disconnect()
     camRig:Destroy()
 
-    for _, block in explodedBlocks do
-        block:Destroy()
+    trashConnection:Disconnect()
+    for _, part in ipairs(CollectionService:GetTagged("Trash")) do
+        if part:IsA("BasePart") then
+            part.Transparency = 0
+        end
     end
-    table.clear(explodedBlocks)
+
+    destroyBlocks()
 
     local camEndCFrame = game.ReplicatedStorage.Cutscenes.Intro:WaitForChild("CamEndCFrame") :: CFrameValue
     cam.CFrame = camEndCFrame.Value
@@ -267,6 +305,8 @@ function module.Clean(connection: RBXScriptConnection, camRig: Model, cam: Camer
     hum.AutoRotate = true
 
     char:PivotTo(CFrame.new(-12.13, 42.5, 2.42))
+
+    setResetEnabled(true)
 
     Packets.Game.requestTutorial.send({number = 2})
 end
