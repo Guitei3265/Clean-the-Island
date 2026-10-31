@@ -25,7 +25,7 @@ function FunnelsModule.LogStep(player: Player, number: number)
         return
     end
 
-    print(`step {number}: {step}`)
+    --print(`step {number}: {step}`)
 
     AS:LogOnboardingFunnelStepEvent(player, number, step)
 end

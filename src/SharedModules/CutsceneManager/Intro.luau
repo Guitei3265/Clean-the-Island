@@ -226,7 +226,7 @@ function module.Scene4(char: Model, hum: Humanoid, humAnimator: Animator, humHrp
 
     humTrack:Play(0)
     camTrack:Play(0)
-    
+
     task.wait(humTrack.Length)
 
     humTrack:Stop(0)
@@ -351,15 +351,10 @@ function module.Play(char: Model)
 
     local connection, cam, camRig = module.SetupCutscene(char, hum, hrp)
     
-    print("Scene1")
     module.Scene1(char, hum, animator, hrp, camRig)
-    print("Scene2")
     module.Scene2(char, hum, animator, hrp, camRig)
-    print("Scene3")
     module.Scene3(char, hum, animator, hrp, camRig)
-    print("Scene4")
     module.Scene4(char, hum, animator, hrp, camRig)
-    print("Scene5")
     module.Scene5(char, hum, animator, hrp, camRig)
 
     module.Clean(connection, camRig, cam, hum, char)
