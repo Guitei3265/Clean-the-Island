@@ -209,6 +209,35 @@ end
 function module.Scene4(char: Model, hum: Humanoid, humAnimator: Animator, humHrp: BasePart, camRig: Model)
     local sceneFolder = cutsceneFolder:WaitForChild("Scene4")
     local humAnim = sceneFolder:WaitForChild("Hum") :: Animation
+    local camAnim = sceneFolder:WaitForChild("Cam") :: Animation
+
+    local camAnimator = camRig:FindFirstChild("Animator", true) :: Animator
+    local camHRP = camRig:WaitForChild("HumanoidRootPart") :: BasePart
+
+    camRig:PivotTo((char.PrimaryPart :: BasePart).CFrame)
+
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = humHrp
+    weld.Part1 = camHRP
+    weld.Parent = camHRP
+
+    local humTrack = humAnimator:LoadAnimation(humAnim)
+    local camTrack = camAnimator:LoadAnimation(camAnim)
+
+    humTrack:Play(0)
+    camTrack:Play(0)
+    
+    task.wait(humTrack.Length)
+
+    humTrack:Stop(0)
+    camTrack:Stop(0)
+
+    weld:Destroy()
+end
+
+function module.Scene5(char: Model, hum: Humanoid, humAnimator: Animator, humHrp: BasePart, camRig: Model)
+    local sceneFolder = cutsceneFolder:WaitForChild("Scene5")
+    local humAnim = sceneFolder:WaitForChild("Hum") :: Animation
     local camCFrame = sceneFolder:WaitForChild("CamCFrame") :: CFrameValue
 
     local campPart = camRig:WaitForChild("Cam") :: BasePart
@@ -322,10 +351,16 @@ function module.Play(char: Model)
 
     local connection, cam, camRig = module.SetupCutscene(char, hum, hrp)
     
+    print("Scene1")
     module.Scene1(char, hum, animator, hrp, camRig)
+    print("Scene2")
     module.Scene2(char, hum, animator, hrp, camRig)
+    print("Scene3")
     module.Scene3(char, hum, animator, hrp, camRig)
+    print("Scene4")
     module.Scene4(char, hum, animator, hrp, camRig)
+    print("Scene5")
+    module.Scene5(char, hum, animator, hrp, camRig)
 
     module.Clean(connection, camRig, cam, hum, char)
 end
