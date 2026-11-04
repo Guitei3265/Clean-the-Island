@@ -34,7 +34,7 @@ local gamepasses: { [string]: GamepassConfig } = {
 		end,
 	},]]
 
-	["Gym 2"] = {
+	--[[["Gym 2"] = {
 		id = 2005844396,
 		onEquip = function(player: Player)
 			DataMethods.WaitForProfile(player)
@@ -68,7 +68,7 @@ local gamepasses: { [string]: GamepassConfig } = {
 				table.insert(unlockedGyms, 4)
 			end
 		end,
-	},
+	},]]
 }
 
 local products = {

@@ -22,8 +22,9 @@ end
 
 function Upgrades.GetBuff(x: number): number
     local growthFactor = Upgrades.configs.growthFactor
-    local buff = math.log(1 + (x * (growthFactor - 1) / 20)) / math.log(growthFactor)
-    return math.floor(buff)
+    local buff = math.log(1 + (x * (growthFactor - 1) / 10)) / math.log(growthFactor)
+    buff = math.floor(buff)
+    return buff
 end
 
 function Upgrades.BuyButton(button: Instance)

@@ -162,6 +162,20 @@ local packets = {
                     bar = ByteNet.inst,
                 })
             }),
+
+            requestRequirement = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    gym = ByteNet.int32,
+                })
+            }),
+
+            sendRequirement = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    gym = ByteNet.int32,
+                    enabled = ByteNet.bool,
+                    requirement = ByteNet.int32,
+                })
+            }),
         }
     end),
 

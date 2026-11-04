@@ -205,6 +205,17 @@ function upgrades.Init()
 
         Packets.Data.sendWorkoutMultiplier.sendTo({workoutMultiplier = nextLevel}, player)
     end)
+
+    Packets.Effects.requestRequirement.listen(function(data, player)
+        local info = Stations[data.gym]
+        if not info then return end
+        
+        if not DataManager.WaitForProfile(player) then return end
+        
+        --if not upgrades.CanUseStation(player, data.gym) then
+            Packets.Effects.sendRequirement.sendTo({gym = data.gym, enabled = upgrades.CanUseStation(player, data.gym), requirement = info.Island}, player)
+        --end
+    end)
 end
 
 return upgrades

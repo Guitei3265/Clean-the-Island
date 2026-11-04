@@ -6,7 +6,7 @@ local clima = {}
 local currentWeather = ""
 
 local weatherStates = {
-    Sunny = 0, --7
+    Sunny = 7, --7
     LightRain = 2,
     HeavyRain = 1,
 }
