@@ -2,7 +2,7 @@ local ProfileStore = require(game.ServerStorage.ServerPackages.ProfileStore :: M
 
 local profileTemplate = {
     Cash = 150,
-    Speed = 0,
+    Speed = 1000,
 	cutscene = true,
 	Islands = 0,
 	UnlockedGyms = {},
@@ -10,7 +10,7 @@ local profileTemplate = {
 	Reach = 5,
     SpeedMultiplier = 1,
 	SpeedMultiplierProduct = 1,
-    Strength = 0,
+    Strength = 1000,
     StrengthMultiplier = 1,
 	StrengthMultiplierProduct = 1,
     MaxSpeed = 1000,

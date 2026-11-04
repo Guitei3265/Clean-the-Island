@@ -6,7 +6,7 @@ local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 
 local player = Players.LocalPlayer
 
-local transparencyDistance = 20
+local transparencyDistance = 25
 local requirementInterval = 5
 
 local function Billboard(billboard: BillboardGui)

@@ -18,7 +18,7 @@ local COLLECT_RADIUS = 10
 local SEND_INTERVAL = 0.12
 local CHECK_INTERVAL = 0.05
 
-local BUTTON_ORIGINAL_SIZE = UDim2.new(0.15, 0, 0.15, 0)
+local BUTTON_ORIGINAL_SIZE = UDim2.new(0.2, 0, 0.12, 0)
 local BUTTON_PRESS_SCALE = 0.7
 
 Packets.Data.sendReach.listen(function(data)
@@ -123,14 +123,6 @@ local function isHolding(): boolean
     return next(activeHolds) ~= nil
 end
 
-local function getButtonLabel(button: GuiButton): (TextButton | TextLabel)?
-    if button:IsA("TextButton") then
-        return button
-    end
-
-    return button:FindFirstChildWhichIsA("TextLabel", true)
-end
-
 local function setButtonsVisible(visible: boolean)
     for _, button in ipairs(CollectionService:GetTagged("GrabButton")) do
         if button:IsA("GuiObject") then
@@ -144,17 +136,17 @@ local grabButtons: {[GuiButton]: true} = {}
 local function updateButtonLabels()
     local inputType = UserInputService:GetLastInputType()
 
-    local text = "E"
-    if inputType.Name:match("^Gamepad") then
-        text = "X"
-    elseif inputType == Enum.UserInputType.Touch then
-        text = ""
-    end
+    local isGamepad = inputType.Name:match("^Gamepad") ~= nil
+    local isTouch = inputType == Enum.UserInputType.Touch
+    local visible = not isTouch
 
-    for button in pairs(grabButtons) do
-        local label = getButtonLabel(button)
-        if label then
-            label.Text = text
+    local text = isGamepad and "X" or "E"
+
+    for _, button in ipairs(CollectionService:GetTagged("GrabButton")) do
+        local inputLabel = button:FindFirstChild("InputLabel")
+        if inputLabel and inputLabel:IsA("TextLabel") then
+            inputLabel.Visible = visible
+            inputLabel.Text = text
         end
     end
 end
