@@ -225,6 +225,16 @@ local packets = {
         }
     end),
 
+    Notifications = ByteNet.defineNamespace("Notifications", function()
+        return {
+            errorMessage = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    text = ByteNet.string,
+                })
+            }),
+        }
+    end),
+
     Clima = ByteNet.defineNamespace("Clima", function()
         return {
             requestWeather = ByteNet.definePacket({

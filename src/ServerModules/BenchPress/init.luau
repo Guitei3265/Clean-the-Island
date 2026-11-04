@@ -48,16 +48,29 @@ function benchPress.RequestBenchPress(data, player: Player)
     local seatsFolder = seat.Parent
     if not seatsFolder then return end
 
+    local authorized = false
+
     for _, otherSeat in seatsFolder:GetChildren() do
         if otherSeat:IsA("Seat") and not otherSeat.Occupant then
             local category = otherSeat:GetAttribute("Category")
 
             if Upgrades.CanUseStation(player, category) then
+                authorized = true
                 otherSeat:Sit(humanoid)
 
                 break
             end
         end
+    end
+
+    if not authorized then
+        local category = seat:GetAttribute("Category")
+        local gamepassId = Upgrades.GetGamepassId(category)
+        if gamepassId then
+            Packets.Robux.Gamepass.sendTo({id = gamepassId}, player)
+        end
+
+        Packets.Notifications.errorMessage.sendTo({text = "Gym locked"}, player)
     end
 end
 

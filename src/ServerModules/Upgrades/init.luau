@@ -48,6 +48,11 @@ function upgrades.CanUseStation(player: Player, category): boolean
     return table.find(unlockedGyms, category) ~= nil
 end
 
+function upgrades.GetGamepassId(category): number?
+    local info = category and Stations[category]
+    return info and info.GamepassId
+end
+
 function upgrades.GetStationMultiplier(player: Player, category): number?
     local info = category and Stations[category]
     if not info then return nil end
@@ -57,6 +62,7 @@ function upgrades.GetStationMultiplier(player: Player, category): number?
         if now - (gamepassPromptDebounce[player] or 0) >= GAMEPASS_PROMPT_DEBOUNCE then
             gamepassPromptDebounce[player] = now
             Packets.Robux.Gamepass.sendTo({id = info.GamepassId}, player)
+            Packets.Notifications.errorMessage.sendTo({text = "Gym locked"}, player)
         end
 
         return nil

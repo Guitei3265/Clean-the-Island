@@ -15,20 +15,37 @@ local function Billboard(billboard: BillboardGui)
 
     local gym = billboard:GetAttribute("Category")
     local locked = billboard:FindFirstChild("Locked", true) :: TextLabel?
-    
+    local padlock = billboard:FindFirstChild("Padlock", true) :: GuiObject?
+    local textLabel = billboard:FindFirstChild("TextLabel", true) :: TextLabel?
+
     if gym and locked then
         Packets.Effects.sendRequirement.listen(function(data)
-            --print(data)
             if data.gym ~= gym then return end
 
+            padlock.Visible = not data.enabled
+            locked.Visible = not data.enabled
+            
             if data.enabled then
-                locked.Text = "Unlocked"
+                locked.TextXAlignment = Enum.TextXAlignment.Center
+                locked.Position = UDim2.new(0.75, 0, locked.Position.Y.Scale, locked.Position.Y.Offset)
+
+                if textLabel then
+                    textLabel.TextXAlignment = Enum.TextXAlignment.Center
+                    textLabel.Position = UDim2.new(0.75, 0, textLabel.Position.Y.Scale, textLabel.Position.Y.Offset)
+                end
             else
                 locked.Text = `Requirement: {data.requirement} islands`
-            end
-            
-        end)
 
+                locked.TextXAlignment = Enum.TextXAlignment.Left
+                locked.Position = UDim2.new(1, 0, locked.Position.Y.Scale, locked.Position.Y.Offset)
+
+                if textLabel then
+                    textLabel.TextXAlignment = Enum.TextXAlignment.Left
+                    textLabel.Position = UDim2.new(1, 0, textLabel.Position.Y.Scale, textLabel.Position.Y.Offset)
+                end
+            end
+        end)
+        
         task.spawn(function()
             while billboard.Parent do
                 Packets.Effects.requestRequirement.send({gym = gym})
@@ -56,10 +73,10 @@ local function Billboard(billboard: BillboardGui)
         for _, descendant in ipairs(billboard:GetDescendants()) do
             if descendant:IsA("TextLabel") then
                 descendant.TextTransparency = transparency
-            else
-                pcall(function()
-                    descendant.Transparency = transparency
-                end)
+            elseif descendant:IsA("ImageLabel") then
+                descendant.ImageTransparency = transparency
+            elseif descendant:IsA("UIStroke") then
+                descendant.Transparency = transparency
             end
         end
     end)
