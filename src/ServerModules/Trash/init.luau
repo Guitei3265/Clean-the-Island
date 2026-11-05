@@ -45,6 +45,7 @@ Trash.Colors2 = {
 local trashFolder: Folder
 local spawnedTrashFolder: Folder
 local oldTrashFolder: Folder
+local collectedTrashFolder: Folder
 local trashRemaining = 0
 
 local raycastParams = RaycastParams.new()
@@ -221,6 +222,7 @@ function Trash.Events()
 
             closestTrash:SetAttribute("Collected", true)
             closestTrash.Transparency = 0.3
+            closestTrash.Parent = collectedTrashFolder
 
             Trash.PlayerTrash[player] = Trash.PlayerTrash[player] or {}
             table.insert(Trash.PlayerTrash[player], closestTrash)
@@ -230,6 +232,11 @@ function Trash.Events()
 
         if grabbedAny then
             Packets.Game.trashGrabbed.sendTo({count = #Trash.PlayerTrash[player]}, player)
+
+            Packets.Effects.trashCount.sendToAll({
+                current = Trash.configs.totalTrash - #spawnedTrashFolder:GetChildren(),
+                total = Trash.configs.totalTrash,
+            })
         end
     end)
 end
@@ -238,6 +245,7 @@ function Trash.Init()
     trashFolder = ServerStorage:WaitForChild("Trash")
     spawnedTrashFolder = workspace:WaitForChild("Trash")
     oldTrashFolder = ServerStorage:WaitForChild("OldTrash")
+    collectedTrashFolder = spawnedTrashFolder:WaitForChild("CollectedTrash") :: Folder
 
     Trash.Events()
     Trash.Spawn()

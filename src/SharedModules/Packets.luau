@@ -163,6 +163,13 @@ local packets = {
                 })
             }),
 
+            trashCount = ByteNet.definePacket({
+                value = ByteNet.struct({
+                    current = ByteNet.int16,
+                    total = ByteNet.int16,
+                })
+            }),
+
             requestRequirement = ByteNet.definePacket({
                 value = ByteNet.struct({
                     gym = ByteNet.int32,
