@@ -186,7 +186,7 @@ local function Stage5(data)
 
             TweenService:Create(stroke, TweenInfo.new(STAGE5_STROKE_TWEEN_TIME), {
                 BorderOffset = UDim.new(0.2, 0),
-                Transparency = 0.1,
+                Transparency = 0.02,
             }):Play()
         end
     end
