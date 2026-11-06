@@ -151,6 +151,11 @@ function Cleaned.Init()
         connection:Disconnect()
 
         if flowersFolder then
+            for _, flower in ipairs(flowersFolder:GetChildren()) do
+                flower:Destroy()
+                task.wait(Cleaned.Configs.flowerSpawnWait)
+            end
+
             flowersFolder:Destroy()
             flowersFolder = nil
         end

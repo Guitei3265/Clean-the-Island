@@ -13,7 +13,21 @@ local weatherStates = {
 
 local weatherTime = 20
 
+local trashFolder = game.Workspace:FindFirstChild("Trash")
+
+local function gameEnded()
+    local ended = false
+    if #trashFolder:GetChildren() <= 1 then
+        ended = true
+    end
+    return ended
+end
+
 function clima.Sorteio(): string
+    if gameEnded() then
+        return "Sunny"
+    end
+
     local totalWeight = 0
     for _, weight in pairs(weatherStates) do
         totalWeight += weight
