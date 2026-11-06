@@ -50,6 +50,18 @@ function upgrades.CanUseStation(player: Player, category): boolean
     return table.find(unlockedGyms, category) ~= nil
 end
 
+function upgrades.GetMultiplierForIslands(islands: number): number
+    local multiplier = Stations[1].Multiplier
+
+    for _, info in pairs(Stations) do
+        if islands >= info.Island and info.Multiplier > multiplier then
+            multiplier = info.Multiplier
+        end
+    end
+
+    return multiplier
+end
+
 function upgrades.GetGamepassId(category): number?
     local info = category and Stations[category]
     return info and info.GamepassId
