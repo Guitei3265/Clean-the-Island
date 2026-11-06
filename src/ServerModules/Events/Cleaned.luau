@@ -15,7 +15,7 @@ Cleaned.Configs = {
     rewardDelta = 0.25,
     totalRewardTime = 30,
     rewardMultiplier = 5,
-    flowerCount = 240,
+    flowerCount = 400,
     flowerSpawnWait = 0.02, --0.02,
     flowerTweenTime = 2,
     eventSaturation = 0.25,
@@ -67,10 +67,10 @@ function Cleaned.SpawnFlowers()
         local angle = math.random(0, 36000) / 100
         local radians = math.rad(angle)
 
-        local distance = 1 + (350 --[[island radius]] - 1) * math.sqrt(math.random())
+        local distance = (210 --[[island radius]] - 1) * math.sqrt(math.random()) ^ 1.8
 
-        local x = math.cos(radians) * distance
-        local z = math.sin(radians) * distance
+        local x = math.cos(radians) * distance - 11
+        local z = math.sin(radians) * distance + 12
 
         local origin = Vector3.new(x, 1000, z)
         local direction = Vector3.new(0, -2000, 0)
@@ -122,8 +122,6 @@ function Cleaned.SpawnFlowers()
 end
 
 function Cleaned.VFX()
-    print("Everything clean!")
-
     Cleaned.SpawnFlowers()
 end
 
