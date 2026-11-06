@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
 
 local DataMethods = require(game.ServerStorage.ServerModules.DataManager.DataMethods)
 local Trash = require(game.ServerStorage.ServerModules.Trash)
@@ -17,6 +18,8 @@ Cleaned.Configs = {
     flowerCount = 240,
     flowerSpawnWait = 0.02, --0.02,
     flowerTweenTime = 2,
+    eventSaturation = 0.25,
+    eventBrightness = 0.05,
 }
 
 local flowerTemplates: Folder
@@ -32,6 +35,15 @@ local function CalculateIslandsMultiplier(player: Player): number
 end
 
 function Cleaned.SpawnFlowers()
+    local colorCorrection = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
+    if colorCorrection then
+        local saturationTweenInfo = TweenInfo.new(Cleaned.Configs.flowerTweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        TweenService:Create(colorCorrection, saturationTweenInfo, {
+            Saturation = Cleaned.Configs.eventSaturation,
+            Brightness = Cleaned.Configs.eventBrightness,
+        }):Play()
+    end
+
     flowerTemplates = flowerTemplates or game.ServerStorage.Assets.Flowers
 
     local folder = Instance.new("Folder")
@@ -141,6 +153,14 @@ function Cleaned.Init()
         if flowersFolder then
             flowersFolder:Destroy()
             flowersFolder = nil
+        end
+
+        local colorCorrection = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
+        if colorCorrection then
+            TweenService:Create(colorCorrection, TweenInfo.new(Cleaned.Configs.flowerTweenTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Saturation = 0.15,
+                Brightness = 0,
+            }):Play()
         end
 
         local success, err = pcall(Trash.Spawn)
