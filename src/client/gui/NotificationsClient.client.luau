@@ -10,7 +10,8 @@ local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 local notifications = playerGui:WaitForChild("Notifications")
-local template = notifications:WaitForChild("Templete") :: TextLabel
+local frame = notifications:WaitForChild("Frame")
+local template = frame:WaitForChild("Templete") :: TextLabel
 
 local notificationDuration = 5
 local fadeTime = 0.5
@@ -27,7 +28,7 @@ local function ErrorMessage(text: string)
     notification.TextColor3 = Color3.fromRGB(255, 40, 40)
     notification.LayoutOrder = layoutOrder
     notification.Visible = true
-    notification.Parent = notifications
+    notification.Parent = frame
 
     local uiStroke = notification:FindFirstChildOfClass("UIStroke")
 
