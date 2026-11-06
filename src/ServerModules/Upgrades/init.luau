@@ -98,7 +98,7 @@ function upgrades.Walked(player: Player, multiplier: number?, endEvent: boolean)
 
     local workoutMultiplier = SharedUpgrades.WorkoutMultiplier(1, profile.WorkoutMultiplier)
     local raw = (profile.SpeedMultiplierProduct * workoutMultiplier * (multiplier or 1)) + (speedRemainders[player] or 0)
-    if gameEnded() then raw *= 5 end
+    if gameEnded() and not endEvent then raw = 0 end
     local gained = math.floor(raw)
 
     
@@ -115,7 +115,7 @@ function upgrades.Strengthed(player: Player, multiplier: number?, endEvent: bool
 
     local workoutMultiplier = SharedUpgrades.WorkoutMultiplier(1, profile.WorkoutMultiplier)
     local raw = (profile.StrengthMultiplierProduct * workoutMultiplier * (multiplier or 1)) + (strengthRemainders[player] or 0)
-    if gameEnded() then raw *= 5 end
+    if gameEnded() and not endEvent then raw = 0 end
     local gained = math.floor(raw)
     
     strengthRemainders[player] = raw - gained

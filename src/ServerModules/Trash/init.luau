@@ -9,8 +9,8 @@ local Upgrades = require(game.ServerStorage.ServerModules.Upgrades)
 local Trash = {}
 
 Trash.configs = {
-    totalTrash = 200,
-    islandRadius = 70, --450
+    totalTrash = 100,
+    islandRadius = 40, --450
     waitInterval = 150,
     orbitRadius = 4.5,
     collectDistance = 50,

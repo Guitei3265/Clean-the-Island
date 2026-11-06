@@ -7,7 +7,7 @@ function Events.Init()
 
     task.spawn(function()
         while task.wait(2) do
-            if #trashFolder:GetChildren() <= 1 then
+            if #trashFolder:GetChildren() <= 1 and not Cleaned.Running then
                 Cleaned.Init()
             end
         end

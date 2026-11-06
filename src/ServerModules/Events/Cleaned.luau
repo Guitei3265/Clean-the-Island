@@ -7,10 +7,12 @@ local Upgrades = require(game.ServerStorage.ServerModules.Upgrades)
 
 local Cleaned = {}
 
+Cleaned.Running = false
+
 Cleaned.Configs = {
     rewardDelta = 0.25,
-    totalRewardTime = 15,
-    rewardMultiplier = 3,
+    totalRewardTime = 30,
+    rewardMultiplier = 5,
 }
 
 local function CalculateIslandsMultiplier(player: Player): number
@@ -19,9 +21,21 @@ local function CalculateIslandsMultiplier(player: Player): number
 end
 
 function Cleaned.RewardPlayers()
+    for _, player in ipairs(Players:GetPlayers()) do
+        local multiplier = CalculateIslandsMultiplier(player) * Cleaned.Configs.rewardMultiplier
+        Upgrades.Walked(player, multiplier, true)
+        Upgrades.Strengthed(player, multiplier, true)
+    end
 end
 
 function Cleaned.Init()
+    Cleaned.Running = true
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        DataMethods.WaitForProfile(player)
+        DataMethods.SetKey(player, "Islands", DataMethods.ReturnKey(player, "Islands") + 1)
+    end
+
     local totalTime = Cleaned.Configs.totalRewardTime
     local loopTime = 0
 
@@ -32,6 +46,11 @@ function Cleaned.Init()
 
         if totalTime <= 0 then
             connection:Disconnect()
+            local success, err = pcall(Trash.Spawn)
+            if not success then
+                warn("Trash.Spawn failed:", err)
+            end
+            Cleaned.Running = false
             return
         end
 
@@ -45,24 +64,6 @@ function Cleaned.Init()
     end)
 
     print("Everything clean!")
-
-    task.wait(1)
-    print("Reseting in")
-
-    for i = 15, 0, -1 do
-        task.wait(1)
-        print(i)
-    end
-
-    for _, player in ipairs(Players:GetPlayers()) do
-        DataMethods.WaitForProfile(player)
-        DataMethods.SetKey(player, "Islands", DataMethods.ReturnKey(player, "Islands") + 1)
-    end
-
-    local success, err = pcall(Trash.Spawn)
-    if not success then
-        warn("Trash.Spawn failed:", err)
-    end
 end
 
 return Cleaned
