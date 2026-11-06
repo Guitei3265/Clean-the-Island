@@ -29,7 +29,7 @@ function benchPress.Connect(player: Player, seat: Seat, humanoid: Humanoid)
             local category = seat:GetAttribute("Category")
             local multiplier = Upgrades.GetStationMultiplier(player, category)
 
-            Upgrades.Strengthed(player, multiplier)
+            Upgrades.Strengthed(player, multiplier, false)
         end
     end)
 end

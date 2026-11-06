@@ -7,6 +7,8 @@ local DataMethods = require(game.ServerStorage.ServerModules.DataManager.DataMet
 local Packets = require(game.ReplicatedStorage.SharedModules.Packets)
 local SharedUpgrades = require(game.ReplicatedStorage.SharedModules.Upgrades)
 
+local trashFolder = game.Workspace:FindFirstChild("Trash")
+
 local upgrades = {}
 
 local speedRemainders: {[Player]: number} = {}
@@ -71,12 +73,23 @@ function upgrades.GetStationMultiplier(player: Player, category): number?
     return info.Multiplier
 end
 
-function upgrades.Walked(player: Player, multiplier: number?)
+local function gameEnded()
+    local ended = false
+    if #trashFolder:GetChildren() <= 1 then
+        ended = true
+    end
+    return ended
+end
+
+function upgrades.Walked(player: Player, multiplier: number?, endEvent: boolean)
     local profile = DataManager.WaitForProfile(player)
 
     local workoutMultiplier = SharedUpgrades.WorkoutMultiplier(1, profile.WorkoutMultiplier)
-    local raw = (profile.SpeedMultiplier * profile.SpeedMultiplierProduct * workoutMultiplier * (multiplier or 1)) + (speedRemainders[player] or 0)
+    local raw = (profile.SpeedMultiplierProduct * workoutMultiplier * (multiplier or 1)) + (speedRemainders[player] or 0)
+    if gameEnded() then raw *= 5 end
     local gained = math.floor(raw)
+
+    
 
     speedRemainders[player] = raw - gained
 
@@ -85,13 +98,14 @@ function upgrades.Walked(player: Player, multiplier: number?)
     end
 end
 
-function upgrades.Strengthed(player: Player, multiplier: number?)
+function upgrades.Strengthed(player: Player, multiplier: number?, endEvent: boolean)
     local profile = DataManager.WaitForProfile(player)
 
     local workoutMultiplier = SharedUpgrades.WorkoutMultiplier(1, profile.WorkoutMultiplier)
-    local raw = (profile.StrengthMultiplier * profile.StrengthMultiplierProduct * workoutMultiplier * (multiplier or 1)) + (strengthRemainders[player] or 0)
+    local raw = (profile.StrengthMultiplierProduct * workoutMultiplier * (multiplier or 1)) + (strengthRemainders[player] or 0)
+    if gameEnded() then raw *= 5 end
     local gained = math.floor(raw)
-
+    
     strengthRemainders[player] = raw - gained
 
     if gained > 0 then
@@ -134,7 +148,7 @@ function upgrades.PlayerAdded(player: Player)
                 local multiplier = upgrades.GetStationMultiplier(player, category)
 
                 if multiplier then
-                    upgrades.Walked(player, multiplier)
+                    upgrades.Walked(player, multiplier, false)
                 end
             end
 
