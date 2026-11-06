@@ -55,6 +55,13 @@ raycastParams.FilterDescendantsInstances = {}
 local collectOverlapParams = OverlapParams.new()
 collectOverlapParams.FilterType = Enum.RaycastFilterType.Include
 
+function Trash.SendTrashCount()
+    Packets.Effects.trashCount.sendToAll({
+        current = Trash.configs.totalTrash - #spawnedTrashFolder:GetChildren(),
+        total = Trash.configs.totalTrash,
+    })
+end
+
 function Trash.Spawn()
     trashRemaining = Trash.configs.totalTrash
 
@@ -110,6 +117,8 @@ function Trash.Spawn()
             end
         end
     end
+
+    Trash.SendTrashCount()
 end
 
 function Trash.GetCapacity(player: Player): number
@@ -233,11 +242,15 @@ function Trash.Events()
         if grabbedAny then
             Packets.Game.trashGrabbed.sendTo({count = #Trash.PlayerTrash[player]}, player)
 
-            Packets.Effects.trashCount.sendToAll({
-                current = Trash.configs.totalTrash - #spawnedTrashFolder:GetChildren(),
-                total = Trash.configs.totalTrash,
-            })
+            Trash.SendTrashCount()
         end
+    end)
+
+    Packets.Effects.requestTrashCount.listen(function(_, player)
+        Packets.Effects.trashCount.sendTo({
+            current = Trash.configs.totalTrash - #spawnedTrashFolder:GetChildren(),
+            total = Trash.configs.totalTrash,
+        }, player)
     end)
 end
 
@@ -245,7 +258,7 @@ function Trash.Init()
     trashFolder = ServerStorage:WaitForChild("Trash")
     spawnedTrashFolder = workspace:WaitForChild("Trash")
     oldTrashFolder = ServerStorage:WaitForChild("OldTrash")
-    collectedTrashFolder = spawnedTrashFolder:WaitForChild("CollectedTrash") :: Folder
+    collectedTrashFolder = workspace:WaitForChild("CollectedTrash") :: Folder
 
     Trash.Events()
     Trash.Spawn()

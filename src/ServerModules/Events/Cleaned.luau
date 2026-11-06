@@ -20,6 +20,16 @@ local function CalculateIslandsMultiplier(player: Player): number
     return Upgrades.GetMultiplierForIslands(islands)
 end
 
+function Cleaned.SpawnFlowers()
+    print("Flowers!")
+end
+
+function Cleaned.VFX()
+    print("Everything clean!")
+
+    Cleaned.SpawnFlowers()
+end
+
 function Cleaned.RewardPlayers()
     for _, player in ipairs(Players:GetPlayers()) do
         local multiplier = CalculateIslandsMultiplier(player) * Cleaned.Configs.rewardMultiplier
@@ -40,17 +50,20 @@ function Cleaned.Init()
     local loopTime = 0
 
     local connection: RBXScriptConnection
+    local function close()
+        connection:Disconnect()
+        local success, err = pcall(Trash.Spawn)
+        if not success then
+            warn("Trash.Spawn failed:", err)
+        end
+        Cleaned.Running = false
+    end
     connection = RunService.Heartbeat:Connect(function(deltaTime)
         totalTime -= deltaTime
         loopTime += deltaTime
 
         if totalTime <= 0 then
-            connection:Disconnect()
-            local success, err = pcall(Trash.Spawn)
-            if not success then
-                warn("Trash.Spawn failed:", err)
-            end
-            Cleaned.Running = false
+            close()
             return
         end
 
@@ -63,7 +76,7 @@ function Cleaned.Init()
         Cleaned.RewardPlayers()
     end)
 
-    print("Everything clean!")
+    task.spawn(Cleaned.VFX)
 end
 
 return Cleaned

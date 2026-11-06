@@ -24,3 +24,10 @@ Packets.Effects.trashCount.listen(function(data)
         end
     end
 end)
+
+while task.wait(1) do
+    if #CollectionService:GetTagged("TrashCountFrame") > 0 then
+        Packets.Effects.requestTrashCount.send()
+        break
+    end
+end
